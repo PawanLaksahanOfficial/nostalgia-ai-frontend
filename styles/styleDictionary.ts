@@ -5,6 +5,7 @@ import { header } from "./header";
 import { footer } from "./footer";
 import { login } from "./login";
 import { videoPreview } from "./vedioPreview";
+import { register } from "./register";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -20,4 +21,5 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("header", header);
     styleDictionary.set("footer", footer);
     styleDictionary.set("videoPreview", videoPreview);
-    styleDictionary.set("login", login)
+    styleDictionary.set("login", login);
+    styleDictionary.set("register", register)
