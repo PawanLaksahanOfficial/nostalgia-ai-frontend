@@ -4,26 +4,56 @@ import { useComponentStyle } from "../../hooks/useComponentStyle"
 import { InputField } from "../common/InputField";
 import { Link } from "react-router-dom";
 import { Button } from "../common/Button";
+import type { RegisterModel, RegisterValidation } from "../../models/RegisterModel";
+import { validateConfirmPassword, validateEmail, validatePassword, validateText } from "../common/validate/validateInputs";
 
-const initialFormInputs = {
+const initialFormInputs: RegisterModel = {
     firstName: "",
     lastName: "",
     email: "",
-    password: ""
+    password: "",
+    confirmPassword: ""
+}
+
+const initialRegisterValidation: RegisterValidation = {
+    firstName: {},
+    lastName: {},
+    email: {},
+    password: {},
+    confirmPassword: {}
 }
 
 export const Register: React.FC = () => {
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const Styles = useComponentStyle("register");
-    const [value, setvalue] = useState<any>();
-    const [formData, setFormData] = useState<any>(initialFormInputs);
+    const [formData, setFormData] = useState<RegisterModel>(initialFormInputs);
+     const [validateModel, setValidateModel] = useState<RegisterValidation>(initialRegisterValidation);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const name = e.target.name;
-        setvalue(value);
-        // setFormData(prev => ({ ...prev, [name]: value}));
+    const handleChange = ({target}: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = target;
+        setFormData(prev => ({...prev, [name]: value}));
+        validateInput(name, value);
     }
+
+     const validateInput = (input: string, value: string) => {
+        if (input === "firstName" || input === "lastName")
+        {
+            setValidateModel((values) => ({...values, [input]: validateText(value)}))
+        }
+        else if (input === "email")
+        {
+            setValidateModel((values) => ({...values, [input]: validateEmail(value)}))
+        }
+        else if (input === "password")
+        {
+            setValidateModel((values) => ({...values, [input]: validatePassword(value)}))
+        }
+        else
+        {
+            setValidateModel((values) => ({...values, [input]: validateConfirmPassword(value, formData.password)}))
+        }
+    }
+
 
     const handleRegister = () => {
 
@@ -42,29 +72,41 @@ export const Register: React.FC = () => {
                             <InputField
                                 label="First Name"
                                 name="firstName"
-                                value={value}
+                                value={formData.firstName}
                                 onChange={handleChange}
+                                validation={validateModel.firstName}
                             />
                             <InputField
                                 label="Last Name"
                                 name="lastName"
-                                value={value}
+                                value={formData.lastName}
                                 onChange={handleChange}
+                                validation={validateModel.lastName}
                             />
                         </div>                       
                         <InputField
                             label="Email"
                             type="email"
                             name="email"
-                            value={value}
+                            value={formData.email}
                             onChange={handleChange}
+                            validation={validateModel.email}
                         />
                         <InputField
                             label="Password"
                             type="password"
                             name="password"
-                            value={value}
+                            value={formData.password}
                             onChange={handleChange}
+                            validation={validateModel.password}
+                        />
+                        <InputField
+                            label="Confirm Password"
+                            type="password"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            validation={validateModel.confirmPassword}
                         />
                         <Button
                             label="Create Account"
