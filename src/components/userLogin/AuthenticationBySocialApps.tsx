@@ -3,6 +3,9 @@ import MetaIcon from "../../assets/svg/meta_icon.svg?react";
 import { postSocialToken } from "../../services/userServices";
 import { useLogin } from 'react-facebook';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { setCredentials } from '../../redux/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -14,14 +17,21 @@ interface Props {
 export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess }) => {
     const { login } = useLogin();
     const [isProcessing, setIsProcessing] = useState(false);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
         setIsProcessing(true);
         try {
             const result = await postSocialToken(token, provider);
-            if (result && onSuccess) {
-                onSuccess(result);
+            // Store JWT token in Redux and localStorage
+            if (result) {
+                dispatch(setCredentials({ token: result }));
+                if (onSuccess) {
+                    onSuccess(result);
+                }
+                navigate('/');
             }
         } finally {
             setIsProcessing(false);

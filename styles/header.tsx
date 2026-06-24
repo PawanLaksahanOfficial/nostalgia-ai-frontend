@@ -34,6 +34,25 @@ export const header = {
       height: "36px",
       borderRadius: "50%",
       background: "#1f2937",
+      cursor: "pointer",
+    },
+    userSection: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+    },
+    userName: {
+      color: "#1f2937",
+      fontSize: "0.9rem",
+      fontWeight: 500,
+    },
+    signOut: {
+      background: "transparent",
+      border: "1px solid #1f2937",
+      padding: "0.4rem 0.8rem",
+      borderRadius: "8px",
+      cursor: "pointer",
+      color: "black",
     },
   },
   desktop: {

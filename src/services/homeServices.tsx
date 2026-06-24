@@ -1,23 +1,81 @@
 import axios from "axios";
 
-const baseUrl = import.meta.env.BASE_URL;
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-export const generate = async(formData : FormData) => {
-    try
-    {
+export const generate = async (text: string, image?: File | null) => {
+    try {
+        const formData = new FormData();
+        formData.append("Text", text);
+        if (image) formData.append("Image", image);
+
         const response = await axios.post(
-            baseUrl + "/api/nostalgia/generate", 
+            baseUrl + "/api/memories/generate", 
             formData,
-        {
-            headers: {
-                "Content-Type": "multipart/form-data"
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data"
+                }
             }
-        })
+        );
         return response.data;
-    }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    catch (error)
-    {
+    } catch (error) {
+        console.error("Error generating nostalgia:", error);
         return null;
     }
-}
+};
+
+export const createMemoryVideo = async (title: string, storyText: string, musicMood?: string) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + "/api/memories/create",
+            { title, storyText, musicMood },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error creating memory video:", error);
+        throw error;
+    }
+};
+
+export const getMemoryStatus = async (jobId: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + `/api/memories/status/${jobId}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error getting memory status:", error);
+        return null;
+    }
+};
+
+export const getMyMemories = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + "/api/memories/my",
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching memories:", error);
+        return [];
+    }
+};

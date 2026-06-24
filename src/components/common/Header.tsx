@@ -1,16 +1,25 @@
 import React from "react";
 import { useComponentStyle } from "../../hooks/useComponentStyle";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState } from "../../redux/store";
+import { logout } from "../../redux/authSlice";
 
 export const Header: React.FC = () => {
   const Styles = useComponentStyle("header");
   const navigate = useNavigate();
-  const loggedIn = false; // TODO → replace with auth state
+  const dispatch = useDispatch();
+  const { isAuthenticated, userName } = useSelector((state: RootState) => state.auth);
 
   const handleSignIn = (e : React.MouseEvent) => {
     e.preventDefault();
     navigate("/signIn");
-  }
+  };
+
+  const handleSignOut = () => {
+    dispatch(logout());
+    navigate("/");
+  };
 
   return (
     <header style={Styles.wrapper}>
@@ -18,8 +27,12 @@ export const Header: React.FC = () => {
         <img src="/images/logo.png" alt="Nostalgia AI" style={Styles.image}/>
       </div>
       <div style={Styles.right}>
-        {loggedIn ? (
-          <div style={Styles.profileCircle}></div>
+        {isAuthenticated ? (
+          <div style={Styles.userSection}>
+            <span style={Styles.userName}>{userName || 'User'}</span>
+            <div style={Styles.profileCircle} onClick={() => navigate('/profile')}></div>
+            <button style={Styles.signOut} onClick={handleSignOut}>Sign Out</button>
+          </div>
         ) : (
           <button style={Styles.signIn} onClick={handleSignIn}>Sign In</button>
         )}
