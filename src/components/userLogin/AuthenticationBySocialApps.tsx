@@ -5,9 +5,7 @@ import { useLogin } from 'react-facebook';
 import { useState } from 'react';
 
 interface Props {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     styles: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess?: (userData: any) => void;
 }
 
@@ -15,13 +13,16 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
     const { login } = useLogin();
     const [isProcessing, setIsProcessing] = useState(false);
 
-    // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
         setIsProcessing(true);
         try {
             const result = await postSocialToken(token, provider);
-            if (result && onSuccess) {
-                onSuccess(result);
+            if (result) {
+                dispatch(setCredentials({ token: result.token, user: result.user }));
+                if (onSuccess) {
+                    onSuccess(result);
+                }
+                navigate('/');
             }
         } finally {
             setIsProcessing(false);
@@ -43,7 +44,6 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
 
     return (
         <div style={styles.wrapper}>
-            {/* Google Button */}
             <div style={{ opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
                 <GoogleLogin 
                     onSuccess={handleGoogleSuccess} 
@@ -53,7 +53,6 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
                     text="continue_with"
                 />
             </div>
-            {/* Meta Button */}
             <button 
                 style={{...styles.socialButton, opacity: isProcessing ? 0.6 : 1}}
                 onClick={handleMetaLogin}
