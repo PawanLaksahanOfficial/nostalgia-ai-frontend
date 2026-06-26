@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
   const Styles = useComponentStyle("header");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { isAuthenticated, userName } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   const handleSignIn = (e : React.MouseEvent) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
       <div style={Styles.right}>
         {isAuthenticated ? (
           <div style={Styles.userSection}>
-            <span style={Styles.userName}>{userName || 'User'}</span>
+            <span style={Styles.userName}>{user?.firstName || 'User'}</span>
             <div style={Styles.profileCircle} onClick={() => navigate('/profile')}></div>
             <button style={Styles.signOut} onClick={handleSignOut}>Sign Out</button>
           </div>
