@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import type { RootState } from "../redux/store";
 import { logout } from "../redux/authSlice";
 import { getProfile, updateProfile, changePassword, getMyMemories, getUsageQuota } from "../services/userServices";
+import { shareMemory, unshareMemory, deleteMemory, regenerateMemory, downloadVideo } from "../services/homeServices";
 
 export const ProfilePage: React.FC = () => {
   const Styles = useComponentStyle("profile");
@@ -21,6 +22,10 @@ export const ProfilePage: React.FC = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [changingPassword, setChangingPassword] = useState(false);
+  const [sharingId, setSharingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -89,6 +94,80 @@ export const ProfilePage: React.FC = () => {
   const handleUpgrade = () => {
     // Redirect to Stripe checkout
     alert("Stripe checkout would open here. Configure Stripe price ID in backend.");
+  };
+
+  const handleShare = async (memoryId: number) => {
+    try {
+      const result = await shareMemory(memoryId);
+      await navigator.clipboard.writeText(result.shareUrl);
+      alert(`Share link copied to clipboard!\n\n${result.shareUrl}`);
+      loadData();
+    } catch (error) {
+      console.error("Failed to share memory:", error);
+      alert("Failed to share memory.");
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const handleUnshare = async (memoryId: number) => {
+    try {
+      await unshareMemory(memoryId);
+      loadData();
+    } catch (error) {
+      console.error("Failed to unshare memory:", error);
+      alert("Failed to unshare memory.");
+    } finally {
+      setSharingId(null);
+    }
+  };
+
+  const handleDelete = async (memoryId: number) => {
+    if (!confirm("Are you sure you want to delete this memory? This action cannot be undone.")) return;
+    try {
+      await deleteMemory(memoryId);
+      loadData();
+    } catch (error) {
+      console.error("Failed to delete memory:", error);
+      alert("Failed to delete memory.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
+  const handleRegenerate = async (memoryId: number) => {
+    if (!confirm("Regenerate this video? This will create a new version.")) return;
+    try {
+      setRegeneratingId(memoryId);
+      await regenerateMemory(memoryId);
+      alert("Regeneration started! Check back soon.");
+      loadData();
+    } catch (error) {
+      console.error("Failed to regenerate memory:", error);
+      alert("Failed to regenerate memory.");
+    } finally {
+      setRegeneratingId(null);
+    }
+  };
+
+  const handleDownload = async (memoryId: number, title: string) => {
+    try {
+      setDownloadingId(memoryId);
+      const blob = await downloadVideo(memoryId);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${title.replace(/[^a-z0-9]/gi, '_')}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+        console.error("Failed to download video:", error);
+        alert("Failed to download video. You may not have access to this quality.");
+    } finally {
+        setDownloadingId(null);
+    }
   };
 
   if (loading) {
@@ -220,7 +299,46 @@ export const ProfilePage: React.FC = () => {
                       </span>
                     </div>
                     {memory.hasVideo && (
-                      <button style={Styles.downloadButton}>Download</button>
+                      <div style={Styles.actionButtons}>
+                        <button 
+                          style={Styles.downloadButton}
+                          onClick={() => handleDownload(memory.id, memory.title)}
+                          disabled={downloadingId === memory.id}
+                        >
+                          {downloadingId === memory.id ? "..." : "Download"}
+                        </button>
+                        {memory.isPublic ? (
+                          <button 
+                            style={Styles.secondaryButton} 
+                            onClick={() => handleUnshare(memory.id)}
+                            disabled={sharingId === memory.id}
+                          >
+                            {sharingId === memory.id ? "..." : "Unshare"}
+                          </button>
+                        ) : (
+                          <button 
+                            style={Styles.primaryButton} 
+                            onClick={() => handleShare(memory.id)}
+                            disabled={sharingId === memory.id}
+                          >
+                            {sharingId === memory.id ? "..." : "Share"}
+                          </button>
+                        )}
+                        <button 
+                          style={Styles.regenerateButton} 
+                          onClick={() => handleRegenerate(memory.id)}
+                          disabled={regeneratingId === memory.id}
+                        >
+                          {regeneratingId === memory.id ? "..." : "Re-generate"}
+                        </button>
+                        <button 
+                          style={Styles.deleteButton} 
+                          onClick={() => handleDelete(memory.id)}
+                          disabled={deletingId === memory.id}
+                        >
+                          {deletingId === memory.id ? "..." : "Delete"}
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}

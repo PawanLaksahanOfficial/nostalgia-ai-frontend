@@ -7,6 +7,7 @@ import { useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { Login } from './components/userLogin/Login'
 import { ProfilePage } from './pages/ProfilePage'
+import { PublicGalleryPage } from './pages/PublicGalleryPage'
 import type { RootState } from './redux/store'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       { path: "/", element: <HomePage /> },
       { path: "/signIn", element: <Login /> },
       { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Login /> },
+      { path: "/gallery", element: <PublicGalleryPage /> },
     ])
     return routes;
   }

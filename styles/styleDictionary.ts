@@ -6,6 +6,7 @@ import { footer } from "./footer";
 import { login } from "./login";
 import { videoPreview } from "./vedioPreview";
 import { profile } from "./profile";
+import { gallery } from "./gallery";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -23,3 +24,4 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("videoPreview", videoPreview);
     styleDictionary.set("login", login)
     styleDictionary.set("profile", profile)
+    styleDictionary.set("gallery", gallery)
