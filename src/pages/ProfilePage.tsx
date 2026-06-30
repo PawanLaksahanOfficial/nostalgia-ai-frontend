@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import type { RootState } from "../redux/store";
 import { logout } from "../redux/authSlice";
 import { getProfile, updateProfile, changePassword, getMyMemories, getUsageQuota } from "../services/userServices";
-import { shareMemory, unshareMemory, deleteMemory, regenerateMemory, downloadVideo } from "../services/homeServices";
+import { shareMemory, unshareMemory, deleteMemory, regenerateMemory, downloadVideo, toggleLike, getComments, addComment, deleteComment, createCollection, getMyCollections, sendGift, getDailyPrompt } from "../services/homeServices";
 
 export const ProfilePage: React.FC = () => {
   const Styles = useComponentStyle("profile");
@@ -26,6 +26,17 @@ export const ProfilePage: React.FC = () => {
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [regeneratingId, setRegeneratingId] = useState<number | null>(null);
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [likedMemories, setLikedMemories] = useState<Set<number>>(new Set());
+  const [likeCounts, setLikeCounts] = useState<Map<number, number>>(new Map());
+  const [comments, setComments] = useState<Map<number, any[]>>(new Map());
+  const [showComments, setShowComments] = useState<Set<number>>(new Set());
+  const [newComment, setNewComment] = useState<string>("");
+  const [collections, setCollections] = useState<any[]>([]);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [giftEmail, setGiftEmail] = useState("");
+  const [giftMessage, setGiftMessage] = useState("");
+  const [giftingId, setGiftingId] = useState<number | null>(null);
+  const [dailyPrompt, setDailyPrompt] = useState<any>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -33,6 +44,8 @@ export const ProfilePage: React.FC = () => {
       return;
     }
     loadData();
+    loadCollections();
+    loadDailyPrompt();
   }, [isAuthenticated, navigate]);
 
   const loadData = async () => {
@@ -51,6 +64,15 @@ export const ProfilePage: React.FC = () => {
       console.error("Failed to load profile:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCollections = async () => {
+    try {
+      const data = await getMyCollections();
+      setCollections(data);
+    } catch (error) {
+      console.error("Failed to load collections:", error);
     }
   };
 
@@ -76,12 +98,10 @@ export const ProfilePage: React.FC = () => {
       setCurrentPassword("");
       setNewPassword("");
       alert("Password changed successfully!");
-    } 
-    catch (error) {
+    } catch (error) {
       console.error("Failed to change password:", error);
       alert("Failed to change password.");
-    } 
-    finally {
+    } finally {
       setChangingPassword(false);
     }
   };
@@ -92,7 +112,6 @@ export const ProfilePage: React.FC = () => {
   };
 
   const handleUpgrade = () => {
-    // Redirect to Stripe checkout
     alert("Stripe checkout would open here. Configure Stripe price ID in backend.");
   };
 
@@ -163,10 +182,126 @@ export const ProfilePage: React.FC = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-        console.error("Failed to download video:", error);
-        alert("Failed to download video. You may not have access to this quality.");
+      console.error("Failed to download video:", error);
+      alert("Failed to download video. You may not have access to this quality.");
     } finally {
-        setDownloadingId(null);
+      setDownloadingId(null);
+    }
+  };
+
+  const handleLike = async (memoryId: number) => {
+    try {
+      const result = await toggleLike(memoryId);
+      setLikeCounts(prev => {
+        const newMap = new Map(prev);
+        newMap.set(memoryId, result.likeCount);
+        return newMap;
+      });
+      setLikedMemories(prev => {
+        const newSet = new Set(prev);
+        if (result.isLikedByCurrentUser) {
+          newSet.add(memoryId);
+        } else {
+          newSet.delete(memoryId);
+        }
+        return newSet;
+      });
+    } catch (error) {
+      console.error("Failed to toggle like:", error);
+    }
+  };
+
+  const handleToggleComments = async (memoryId: number) => {
+    const newShowComments = new Set(showComments);
+    if (newShowComments.has(memoryId)) {
+      newShowComments.delete(memoryId);
+      setShowComments(newShowComments);
+      return;
+    }
+    newShowComments.add(memoryId);
+    setShowComments(newShowComments);
+
+    try {
+      const commentsData = await getComments(memoryId);
+      setComments(prev => {
+        const newMap = new Map(prev);
+        newMap.set(memoryId, commentsData);
+        return newMap;
+      });
+    } catch (error) {
+      console.error("Failed to load comments:", error);
+    }
+  };
+
+  const handleAddComment = async (memoryId: number) => {
+    if (!newComment.trim()) return;
+    try {
+      const comment = await addComment(memoryId, newComment);
+      setComments(prev => {
+        const newMap = new Map(prev);
+        const currentComments = newMap.get(memoryId) || [];
+        newMap.set(memoryId, [comment, ...currentComments]);
+        return newMap;
+      });
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+      alert("Failed to add comment.");
+    }
+  };
+
+  const handleDeleteComment = async (commentId: number, memoryId: number) => {
+    try {
+      await deleteComment(commentId);
+      setComments(prev => {
+        const newMap = new Map(prev);
+        const currentComments = newMap.get(memoryId) || [];
+        newMap.set(memoryId, currentComments.filter((c: any) => c.id !== commentId));
+        return newMap;
+      });
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
+
+  const handleCreateCollection = async () => {
+    if (!newCollectionName.trim()) return;
+    try {
+      const collection = await createCollection(newCollectionName);
+      setCollections(prev => [...prev, collection]);
+      setNewCollectionName("");
+      alert("Collection created!");
+    } catch (error) {
+      console.error("Failed to create collection:", error);
+      alert("Failed to create collection.");
+    }
+  };
+
+  const loadDailyPrompt = async () => {
+    try {
+      const prompt = await getDailyPrompt();
+      setDailyPrompt(prompt);
+    } catch (error) {
+      console.error("Failed to load daily prompt:", error);
+    }
+  };
+
+  const handleSendGift = async (memoryId: number) => {
+    if (!giftEmail.trim()) {
+      alert("Please enter recipient email.");
+      return;
+    }
+    try {
+      setGiftingId(memoryId);
+      await sendGift(memoryId, giftEmail, giftMessage);
+      alert("Gift sent successfully!");
+      setGiftEmail("");
+      setGiftMessage("");
+    } catch (error) {
+      console.error("Failed to send gift:", error);
+      alert("Failed to send gift.");
+    } finally {
+      setGiftingId(null);
     }
   };
 
@@ -301,6 +436,18 @@ export const ProfilePage: React.FC = () => {
                     {memory.hasVideo && (
                       <div style={Styles.actionButtons}>
                         <button 
+                          style={Styles.likeButton}
+                          onClick={() => handleLike(memory.id)}
+                        >
+                          {likedMemories.has(memory.id) ? '❤️' : '🤍'} {likeCounts.get(memory.id) || 0}
+                        </button>
+                        <button 
+                          style={Styles.commentButton}
+                          onClick={() => handleToggleComments(memory.id)}
+                        >
+                          💬 {comments.get(memory.id)?.length || 0}
+                        </button>
+                        <button 
                           style={Styles.downloadButton}
                           onClick={() => handleDownload(memory.id, memory.title)}
                           disabled={downloadingId === memory.id}
@@ -338,6 +485,80 @@ export const ProfilePage: React.FC = () => {
                         >
                           {deletingId === memory.id ? "..." : "Delete"}
                         </button>
+                        <button 
+                          style={Styles.giftButton}
+                          onClick={() => setGiftingId(giftingId === memory.id ? null : memory.id)}
+                          disabled={giftingId === memory.id}
+                        >
+                          🎁 Gift
+                        </button>
+                      </div>
+                    )}
+                    {giftingId === memory.id && (
+                      <div style={Styles.giftForm}>
+                        <input
+                          type="email"
+                          value={giftEmail}
+                          onChange={(e) => setGiftEmail(e.target.value)}
+                          placeholder="Recipient email"
+                          style={Styles.input}
+                        />
+                        <input
+                          type="text"
+                          value={giftMessage}
+                          onChange={(e) => setGiftMessage(e.target.value)}
+                          placeholder="Optional message"
+                          style={Styles.input}
+                        />
+                        <button 
+                          style={Styles.primaryButton}
+                          onClick={() => handleSendGift(memory.id)}
+                        >
+                          Send Gift
+                        </button>
+                      </div>
+                    )}
+                    {showComments.has(memory.id) && (
+                      <div style={Styles.commentsSection}>
+                        <div style={Styles.commentsList}>
+                          {(comments.get(memory.id) || []).map((comment: any) => (
+                            <div key={comment.id} style={Styles.commentItem}>
+                              <div style={Styles.commentHeader}>
+                                <strong>{comment.userName}</strong>
+                                <span style={Styles.commentDate}>
+                                  {new Date(comment.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <p style={Styles.commentText}>{comment.text}</p>
+                              {comment.userId === profile?.userId && (
+                                <button 
+                                  style={Styles.deleteCommentButton}
+                                  onClick={() => handleDeleteComment(comment.id, memory.id)}
+                                >
+                                  Delete
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        <div style={Styles.addCommentForm}>
+                          <input
+                            type="text"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Add a comment..."
+                            style={Styles.commentInput}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') handleAddComment(memory.id);
+                            }}
+                          />
+                          <button 
+                            style={Styles.submitCommentButton}
+                            onClick={() => handleAddComment(memory.id)}
+                          >
+                            Post
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -345,6 +566,44 @@ export const ProfilePage: React.FC = () => {
               </div>
             )}
           </div>
+          <div style={Styles.section}>
+            <h2 style={Styles.sectionTitle}>My Collections</h2>
+            <div style={Styles.collectionsSection}>
+              <div style={Styles.createCollectionForm}>
+                <input
+                  type="text"
+                  value={newCollectionName}
+                  onChange={(e) => setNewCollectionName(e.target.value)}
+                  placeholder="New collection name"
+                  style={Styles.input}
+                />
+                <button style={Styles.primaryButton} onClick={handleCreateCollection}>
+                  Create
+                </button>
+              </div>
+              {collections.length > 0 && (
+                <div style={Styles.collectionsList}>
+                  {collections.map((collection) => (
+                    <div key={collection.id} style={Styles.collectionItem}>
+                      <div>
+                        <h4 style={Styles.collectionName}>{collection.name}</h4>
+                        <p style={Styles.collectionMeta}>{collection.memoryCount} memories</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          {dailyPrompt && (
+            <div style={Styles.section}>
+              <h2 style={Styles.sectionTitle}>💭 Daily Prompt</h2>
+              <div style={Styles.promptBox}>
+                <p style={Styles.promptText}>{dailyPrompt.prompt}</p>
+                <p style={Styles.promptDate}>{dailyPrompt.date}</p>
+              </div>
+            </div>
+          )}
           <div style={Styles.footer}>
             <button style={Styles.signOutButton} onClick={handleSignOut}>Sign Out</button>
           </div>

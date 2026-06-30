@@ -191,3 +191,212 @@ export const downloadVideo = async (memoryId: number) => {
         throw error;
     }
 };
+
+export const toggleLike = async (memoryId: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + `/api/social/memories/${memoryId}/like`,
+            {},
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error toggling like:", error);
+        throw error;
+    }
+};
+
+export const getComments = async (memoryId: number) => {
+    try {
+        const response = await axios.get(baseUrl + `/api/social/memories/${memoryId}/comments`);
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching comments:", error);
+        return [];
+    }
+};
+
+export const addComment = async (memoryId: number, text: string) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + `/api/social/memories/${memoryId}/comments`,
+            { text },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error adding comment:", error);
+        throw error;
+    }
+};
+
+export const deleteComment = async (commentId: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(
+            baseUrl + `/api/social/comments/${commentId}`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        throw error;
+    }
+};
+
+export const createCollection = async (name: string, description?: string) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + '/api/social/collections',
+            { name, description },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error creating collection:", error);
+        throw error;
+    }
+};
+
+export const getMyCollections = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + '/api/social/collections',
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching collections:", error);
+        return [];
+    }
+};
+
+export const addMemoryToCollection = async (collectionId: number, memoryId: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + `/api/social/collections/${collectionId}/memories`,
+            { memoryId },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error adding memory to collection:", error);
+        throw error;
+    }
+};
+
+export const getMemoriesInCollection = async (collectionId: number) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + `/api/social/collections/${collectionId}/memories`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching collection memories:", error);
+        return [];
+    }
+};
+
+export const sendGift = async (memoryId: number, recipientEmail: string, message?: string) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post(
+            baseUrl + '/api/social/gifts',
+            { memoryId, recipientEmail, message },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error sending gift:", error);
+        throw error;
+    }
+};
+
+export const getSentGifts = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + '/api/social/gifts/sent',
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching sent gifts:", error);
+        return [];
+    }
+};
+
+export const getReceivedGifts = async () => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+            baseUrl + '/api/social/gifts/received',
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching received gifts:", error);
+        return [];
+    }
+};
+
+export const getDailyPrompt = async () => {
+    try {
+        const response = await axios.get(baseUrl + '/api/social/prompts/daily');
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching daily prompt:", error);
+        return null;
+    }
+};
