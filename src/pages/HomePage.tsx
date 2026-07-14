@@ -23,10 +23,9 @@ export const HomePage: React.FC = () => {
     if (image) formData.append("Image", image);
 
     try {
-      const response = await generate(formData)
-      if (!response.ok) throw new Error("Failed to generate video");
-      const data = await response.json();
-      setVideoUrl(data.url);
+      const response = await generate(text, image)
+      if (!response) throw new Error("Failed to generate video");
+      setVideoUrl(response);
     } catch (error) {
       console.error(error);
       alert("Error generating video. Please try again.");

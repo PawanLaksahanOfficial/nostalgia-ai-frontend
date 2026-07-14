@@ -8,9 +8,7 @@ import { setCredentials } from '../../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     styles: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onSuccess?: (userData: any) => void;
 }
 
@@ -20,14 +18,12 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
         setIsProcessing(true);
         try {
             const result = await postSocialToken(token, provider);
-            // Store JWT token in Redux and localStorage
             if (result) {
-                dispatch(setCredentials({ token: result }));
+                dispatch(setCredentials({ token: result.token, user: result.user }));
                 if (onSuccess) {
                     onSuccess(result);
                 }
@@ -53,7 +49,6 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
 
     return (
         <div style={styles.wrapper}>
-            {/* Google Button */}
             <div style={{ opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
                 <GoogleLogin 
                     onSuccess={handleGoogleSuccess} 
@@ -63,7 +58,6 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
                     text="continue_with"
                 />
             </div>
-            {/* Meta Button */}
             <button 
                 style={{...styles.socialButton, opacity: isProcessing ? 0.6 : 1}}
                 onClick={handleMetaLogin}

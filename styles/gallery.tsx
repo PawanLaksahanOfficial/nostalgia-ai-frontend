@@ -1,0 +1,185 @@
+export const gallery = {
+  mobile: {
+    wrapper: {
+      minHeight: "100vh",
+      backgroundColor: "#f9fafb",
+      padding: "1rem",
+    },
+    content: {
+      maxWidth: "1200px",
+      margin: "0 auto",
+    },
+    header: {
+      textAlign: "center" as const,
+      marginBottom: "2rem",
+    },
+    title: {
+      fontSize: "2rem",
+      fontWeight: 700,
+      color: "#1f2937",
+      marginBottom: "0.5rem",
+    },
+    subtitle: {
+      fontSize: "1rem",
+      color: "#6b7280",
+    },
+    grid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+      gap: "1.5rem",
+    },
+    card: {
+      backgroundColor: "#ffffff",
+      borderRadius: "12px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+      overflow: "hidden",
+      cursor: "pointer",
+      transition: "transform 0.2s, box-shadow 0.2s",
+    },
+    thumbnail: {
+      width: "100%",
+      height: "180px",
+      objectFit: "cover" as const,
+    },
+    placeholder: {
+      width: "100%",
+      height: "180px",
+      backgroundColor: "#e5e7eb",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    placeholderIcon: {
+      fontSize: "3rem",
+    },
+    cardContent: {
+      padding: "1rem",
+    },
+    cardTitle: {
+      fontSize: "1.1rem",
+      fontWeight: 600,
+      color: "#1f2937",
+      marginBottom: "0.5rem",
+    },
+    cardMeta: {
+      fontSize: "0.875rem",
+      color: "#6b7280",
+      marginBottom: "0.75rem",
+    },
+    cardFooter: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+    },
+    views: {
+      fontSize: "0.875rem",
+      color: "#6b7280",
+    },
+    emptyState: {
+      textAlign: "center" as const,
+      padding: "4rem 2rem",
+      color: "#6b7280",
+    },
+    loading: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+      fontSize: "1.125rem",
+      color: "#6b7280",
+    },
+    modal: {
+      position: "fixed" as const,
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.8)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 1000,
+      padding: "1rem",
+    },
+    modalContent: {
+      backgroundColor: "#ffffff",
+      borderRadius: "12px",
+      maxWidth: "800px",
+      width: "100%",
+      maxHeight: "90vh",
+      overflowY: "auto" as const,
+      position: "relative" as const,
+      padding: "2rem",
+    },
+    closeButton: {
+      position: "absolute" as const,
+      top: "1rem",
+      right: "1rem",
+      background: "transparent",
+      border: "none",
+      fontSize: "1.5rem",
+      cursor: "pointer",
+      color: "#6b7280",
+      width: "32px",
+      height: "32px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    modalTitle: {
+      fontSize: "1.5rem",
+      fontWeight: 700,
+      color: "#1f2937",
+      marginBottom: "0.5rem",
+      paddingRight: "2rem",
+    },
+    modalAuthor: {
+      fontSize: "0.875rem",
+      color: "#6b7280",
+      marginBottom: "1rem",
+    },
+    modalImage: {
+      width: "100%",
+      maxHeight: "300px",
+      objectFit: "cover" as const,
+      borderRadius: "8px",
+      marginBottom: "1rem",
+    },
+    modalStory: {
+      fontSize: "1rem",
+      color: "#374151",
+      lineHeight: 1.6,
+      marginBottom: "1rem",
+    },
+    videoPlayer: {
+      width: "100%",
+      borderRadius: "8px",
+      marginBottom: "1rem",
+    },
+    modalMeta: {
+      fontSize: "0.875rem",
+      color: "#6b7280",
+      textAlign: "center" as const,
+    },
+  },
+  desktop: {
+    wrapper: {
+      padding: "2rem",
+    },
+    title: {
+      fontSize: "2.5rem",
+    },
+    grid: {
+      gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    },
+    thumbnail: {
+      height: "220px",
+    },
+    placeholder: {
+      height: "220px",
+    },
+    modalContent: {
+      padding: "2.5rem",
+    },
+  },
+};
