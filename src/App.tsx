@@ -6,6 +6,10 @@ import { setMobile } from './redux/styleSlice'
 import { useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { Login } from './components/userLogin/Login'
+import { ProfilePage } from './pages/ProfilePage'
+import { PublicGalleryPage } from './pages/PublicGalleryPage'
+import { TimelinePage } from './pages/TimelinePage'
+import { PublicProfilePage } from './pages/PublicProfilePage'
 import type { RootState } from './redux/store'
 
 function App() {
@@ -17,7 +21,10 @@ function App() {
     const routes = useRoutes([
       { path: "/", element: <HomePage /> },
       { path: "/signIn", element: <Login /> },
-      { path: "/profile", element: isAuthenticated ? <HomePage /> : <Login /> },
+      { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Login /> },
+      { path: "/gallery", element: <PublicGalleryPage /> },
+      { path: "/timeline", element: <TimelinePage /> },
+      { path: "/users/:userId", element: <PublicProfilePage /> },
     ])
     return routes;
   }
