@@ -6,17 +6,32 @@ import { setCredentials } from "../../redux/authSlice";
 import { login, register } from "../../services/userServices";
 import { AuthenticationBySocialApps } from "./AuthenticationBySocialApps";
 
+const initialForm = { email: "", password: "", firstName: "", lastName: "" };
+
 export const Login: React.FC = () => {
   const Styles = useComponentStyle("login");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [form, setForm] = useState(initialForm);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleFirstNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, firstName: e.target.value }));
+  };
+
+  const handleLastNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, lastName: e.target.value }));
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, email: e.target.value }));
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, password: e.target.value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,17 +41,28 @@ export const Login: React.FC = () => {
     try {
       let result;
       if (isLogin) {
-        result = await login({ email, password });
+        result = await login({ email: form.email, password: form.password });
       } else {
-        result = await register({ firstName, lastName, email, password });
+        result = await register({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        });
       }
-      dispatch(setCredentials({
-        token: result.token,
-        user: result.user
-      }));
+      dispatch(
+        setCredentials({
+          token: result.token,
+          user: result.user,
+        })
+      );
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || err.response?.data || "Authentication failed.");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Authentication failed."
+      );
     } finally {
       setLoading(false);
     }
@@ -45,19 +71,26 @@ export const Login: React.FC = () => {
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setError("");
+    setForm(initialForm);
   };
 
   return (
-    <div style={Styles.wrapper}> 
+    <div style={Styles.wrapper}>
       <main style={Styles.content}>
         <div style={Styles.card}>
-          <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <h2 style={Styles.title}>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+          <header style={{ textAlign: "center", marginBottom: "2rem" }}>
+            <h2 style={Styles.title}>
+              {isLogin ? "Welcome Back" : "Create Account"}
+            </h2>
             <p style={Styles.subtitle}>
-              {isLogin ? 'Enter your details to access your account' : 'Sign up to start creating nostalgic memories'}
+              {isLogin
+                ? "Enter your details to access your account"
+                : "Sign up to start creating nostalgic memories"}
             </p>
           </header>
-          {error && <div style={Styles.error}>{error}</div>}
+          {error && (
+            <div style={Styles.errorAlert}>{error}</div>
+          )}
           <form onSubmit={handleSubmit} style={Styles.inputSection}>
             {!isLogin && (
               <>
@@ -65,8 +98,8 @@ export const Login: React.FC = () => {
                   <label style={Styles.label}>First Name</label>
                   <input
                     type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={form.firstName}
+                    onChange={handleFirstNameChange}
                     style={Styles.input}
                     required={!isLogin}
                   />
@@ -75,8 +108,8 @@ export const Login: React.FC = () => {
                   <label style={Styles.label}>Last Name</label>
                   <input
                     type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={form.lastName}
+                    onChange={handleLastNameChange}
                     style={Styles.input}
                     required={!isLogin}
                   />
@@ -87,8 +120,8 @@ export const Login: React.FC = () => {
               <label style={Styles.label}>Email Address</label>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={form.email}
+                onChange={handleEmailChange}
                 style={Styles.input}
                 required
               />
@@ -97,8 +130,8 @@ export const Login: React.FC = () => {
               <label style={Styles.label}>Password</label>
               <input
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={form.password}
+                onChange={handlePasswordChange}
                 style={Styles.input}
                 required
                 minLength={6}
@@ -107,9 +140,19 @@ export const Login: React.FC = () => {
             <button
               type="submit"
               style={Styles.primaryButton}
-              disabled={loading || !email.trim() || !password.trim() || (!isLogin && (!firstName.trim() || !lastName.trim()))}
+              disabled={
+                loading ||
+                !form.email.trim() ||
+                !form.password.trim() ||
+                (!isLogin &&
+                  (!form.firstName.trim() || !form.lastName.trim()))
+              }
             >
-              {loading ? "Processing..." : isLogin ? "Sign In" : "Create Account"}
+              {loading
+                ? "Processing..."
+                : isLogin
+                ? "Sign In"
+                : "Create Account"}
             </button>
           </form>
 
@@ -119,11 +162,15 @@ export const Login: React.FC = () => {
             <div style={Styles.dividerLine}></div>
           </div>
 
-          <AuthenticationBySocialApps styles={Styles.socialContainer}/>
+          <AuthenticationBySocialApps styles={Styles.socialContainer} />
 
           <p style={Styles.signupText}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <button type="button" style={Styles.link} onClick={toggleMode}>
+            <button
+              type="button"
+              style={Styles.link}
+              onClick={toggleMode}
+            >
               {isLogin ? "Create one" : "Sign in"}
             </button>
           </p>

@@ -4,22 +4,25 @@ import { useComponentStyle } from "../hooks/useComponentStyle";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../redux/store";
 import { logout } from "../redux/authSlice";
-import { getProfile, updateProfile, changePassword, getMyMemories, getUsageQuota } from "../services/userServices";
+import { getProfile, updateProfile, changePassword, getMyMemories, createCheckoutSession } from "../services/userServices";
+import type { ProfileData, MemoryItem } from "../services/userServices";
+import { ErrorPage } from "../components/common/ErrorPage";
+
+const initialProfileForm = { firstName: "", lastName: "" };
+const initialPasswordForm = { currentPassword: "", newPassword: "" };
 
 export const ProfilePage: React.FC = () => {
   const Styles = useComponentStyle("profile");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const [profile, setProfile] = useState<any>(null);
-  const [memories, setMemories] = useState<any[]>([]);
-  const [quota, setQuota] = useState<any>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [memories, setMemories] = useState<MemoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pageError, setPageError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [profileForm, setProfileForm] = useState(initialProfileForm);
+  const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
@@ -31,19 +34,21 @@ export const ProfilePage: React.FC = () => {
   }, [isAuthenticated, navigate]);
 
   const loadData = async () => {
+    setLoading(true);
+    setPageError(null);
     try {
-      const [profileData, memoriesData, quotaData] = await Promise.all([
+      const [profileData, memoriesData] = await Promise.all([
         getProfile(),
-        getMyMemories(),
-        getUsageQuota()
+        getMyMemories()
       ]);
       setProfile(profileData);
       setMemories(memoriesData);
-      setQuota(quotaData);
-      setFirstName(profileData.firstName);
-      setLastName(profileData.lastName);
-    } catch (error) {
-      console.error("Failed to load profile:", error);
+      setProfileForm({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName
+      });
+    } catch (error: any) {
+      setPageError(error.message || "Failed to load profile.");
     } finally {
       setLoading(false);
     }
@@ -51,32 +56,33 @@ export const ProfilePage: React.FC = () => {
 
   const handleUpdateProfile = async () => {
     try {
-      await updateProfile({ firstName, lastName });
+      await updateProfile({
+        firstName: profileForm.firstName,
+        lastName: profileForm.lastName
+      });
       setEditing(false);
-      loadData();
-    } catch (error) {
-      console.error("Failed to update profile:", error);
-      alert("Failed to update profile.");
+      await loadData();
+    } catch (error: any) {
+      alert(error.message || "Failed to update profile.");
     }
   };
 
   const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword) {
+    if (!passwordForm.currentPassword || !passwordForm.newPassword) {
       alert("Please fill in both password fields.");
       return;
     }
     setChangingPassword(true);
     try {
-      await changePassword({ currentPassword, newPassword });
-      setCurrentPassword("");
-      setNewPassword("");
+      await changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+      setPasswordForm(initialPasswordForm);
       alert("Password changed successfully!");
-    } 
-    catch (error) {
-      console.error("Failed to change password:", error);
-      alert("Failed to change password.");
-    } 
-    finally {
+    } catch (error: any) {
+      alert(error.message || "Failed to change password.");
+    } finally {
       setChangingPassword(false);
     }
   };
@@ -86,26 +92,38 @@ export const ProfilePage: React.FC = () => {
     navigate("/");
   };
 
-  const handleUpgrade = () => {
-    // Redirect to Stripe checkout
-    alert("Stripe checkout would open here. Configure Stripe price ID in backend.");
+  const handleUpgrade = async () => {
+    try {
+      const priceId = "price_1Tuo7TCljtrS1H5Ci8449rkm";
+      const successUrl = `${window.location.origin}/profile?checkout=success`;
+      const cancelUrl = `${window.location.origin}/profile?checkout=cancel`;
+      const { sessionUrl } = await createCheckoutSession(priceId, successUrl, cancelUrl);
+      window.location.href = sessionUrl;
+    } catch (error: any) {
+      alert(error.message || "Failed to start checkout.");
+    }
   };
 
   if (loading) {
     return <div style={Styles.loading}>Loading...</div>;
   }
-
+  if (pageError) {
+    return <ErrorPage message={pageError} onRetry={loadData} onGoHome={() => navigate('/')} />;
+  }
   if (!profile) {
-    return <div style={Styles.error}>Failed to load profile.</div>;
+    return <ErrorPage message="Unable to load profile data." onRetry={loadData} onGoHome={() => navigate('/')} />;
   }
 
-  const usagePercentage = quota ? Math.round((quota.monthlyMemoriesUsed / quota.monthlyMemoriesLimit) * 100) : 0;
+  const usagePercentage = profile.quota
+    ? Math.round((profile.quota.monthlyMemoriesUsed / profile.quota.monthlyMemoriesLimit) * 100)
+    : 0;
 
   return (
     <div style={Styles.wrapper}>
       <main style={Styles.content}>
         <div style={Styles.card}>
           <h1 style={Styles.title}>My Profile</h1>
+
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Account Information</h2>
             {editing ? (
@@ -114,8 +132,8 @@ export const ProfilePage: React.FC = () => {
                   <label style={Styles.label}>First Name</label>
                   <input
                     type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
+                    value={profileForm.firstName}
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, firstName: e.target.value }))}
                     style={Styles.input}
                   />
                 </div>
@@ -123,8 +141,8 @@ export const ProfilePage: React.FC = () => {
                   <label style={Styles.label}>Last Name</label>
                   <input
                     type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
+                    value={profileForm.lastName}
+                    onChange={(e) => setProfileForm(prev => ({ ...prev, lastName: e.target.value }))}
                     style={Styles.input}
                   />
                 </div>
@@ -142,32 +160,36 @@ export const ProfilePage: React.FC = () => {
               </div>
             )}
           </div>
+
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Subscription & Usage</h2>
-            {quota && (
+            {profile.quota && (
               <div style={Styles.quotaDisplay}>
                 <div style={Styles.quotaItem}>
                   <span style={Styles.quotaLabel}>Monthly Memories:</span>
-                  <span style={Styles.quotaValue}>{quota.monthlyMemoriesUsed} / {quota.monthlyMemoriesLimit}</span>
+                  <span style={Styles.quotaValue}>{profile.quota.monthlyMemoriesUsed} / {profile.quota.monthlyMemoriesLimit}</span>
                 </div>
                 <div style={Styles.progressBar}>
                   <div style={{ ...Styles.progressFill, width: `${usagePercentage}%` }}></div>
                 </div>
                 <div style={Styles.quotaItem}>
                   <span style={Styles.quotaLabel}>Max Video Duration:</span>
-                  <span style={Styles.quotaValue}>{quota.maxVideoDurationSeconds}s</span>
+                  <span style={Styles.quotaValue}>{profile.quota.maxVideoDurationSeconds}s</span>
                 </div>
                 <div style={Styles.quotaItem}>
                   <span style={Styles.quotaLabel}>Quality:</span>
-                  <span style={Styles.quotaValue}>{quota.quality}</span>
+                  <span style={Styles.quotaValue}>{profile.quota.quality}</span>
                 </div>
-                {quota.hasWatermark && <p style={Styles.watermarkNote}>Videos will include a "Made with Nostalgia AI" watermark</p>}
+                {profile.quota.hasWatermark && (
+                  <p style={Styles.watermarkNote}>Videos will include a "Made with Nostalgia AI" watermark</p>
+                )}
                 {profile.tier === 'free' && (
                   <button style={Styles.upgradeButton} onClick={handleUpgrade}>Upgrade to Premium</button>
                 )}
               </div>
             )}
           </div>
+
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Change Password</h2>
             <div style={Styles.form}>
@@ -175,8 +197,8 @@ export const ProfilePage: React.FC = () => {
                 <label style={Styles.label}>Current Password</label>
                 <input
                   type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
                   style={Styles.input}
                 />
               </div>
@@ -184,13 +206,13 @@ export const ProfilePage: React.FC = () => {
                 <label style={Styles.label}>New Password</label>
                 <input
                   type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
                   style={Styles.input}
                 />
               </div>
-              <button 
-                style={Styles.primaryButton} 
+              <button
+                style={Styles.primaryButton}
                 onClick={handleChangePassword}
                 disabled={changingPassword}
               >
@@ -198,6 +220,7 @@ export const ProfilePage: React.FC = () => {
               </button>
             </div>
           </div>
+
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>My Memories</h2>
             {memories.length === 0 ? (
@@ -227,6 +250,7 @@ export const ProfilePage: React.FC = () => {
               </div>
             )}
           </div>
+
           <div style={Styles.footer}>
             <button style={Styles.signOutButton} onClick={handleSignOut}>Sign Out</button>
           </div>

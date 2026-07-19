@@ -43,6 +43,14 @@ export const login = {
             color: "#666",
             fontSize: "0.95rem",
         },
+        errorAlert: {
+            padding: "0.75rem",
+            marginBottom: "1rem",
+            borderRadius: "5px",
+            backgroundColor: "#fef2f2",
+            color: "#dc2626",
+            border: "1px solid #fecaca",
+        },
         inputSection: {
             display: "flex",
             flexDirection: "column",
@@ -69,6 +77,21 @@ export const login = {
                 gridTemplateColumns: "1fr 1fr", // Side by side buttons
                 gap: "1rem",
             },
+            socialErrorAlert: {
+                gridColumn: "1 / -1",
+                padding: "0.5rem",
+                marginBottom: "0.75rem",
+                borderRadius: "5px",
+                backgroundColor: "#fef2f2",
+                color: "#dc2626",
+                border: "1px solid #fecaca",
+                fontSize: "0.875rem",
+                textAlign: "center" as const,
+            },
+            processingOverlay: {
+                opacity: 0.6,
+                pointerEvents: "none" as const,
+            },
             socialButton: {
                 display: 'flex',
                 alignItems: 'center',
@@ -82,6 +105,9 @@ export const login = {
                 fontFamily: 'Roboto, Arial, sans-serif',
                 fontSize: '14px',
                 fontWeight: '500',
+            },
+            socialButtonDisabled: {
+                opacity: 0.6,
             },
             iconContainer: {
                 backgroundColor: '#FFFFFF',
