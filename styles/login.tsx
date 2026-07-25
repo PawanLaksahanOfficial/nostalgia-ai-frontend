@@ -19,7 +19,7 @@ export const login = {
             zIndex: 1,
             flex: 1,
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "center", 
             alignItems: "center",
             padding: "1.5rem",
         },

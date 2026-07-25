@@ -5,8 +5,8 @@ import { useMediaQuery } from 'react-responsive'
 import { setMobile } from './redux/styleSlice'
 import { useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
-import { Login } from './components/userLogin/Login'
 import type { RootState } from './redux/store'
+import { Login } from './components/userAuthenticate/Login'
 
 function App() {
   const dispatch = useDispatch();
