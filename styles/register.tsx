@@ -55,10 +55,41 @@ export const register = {
         socialContainer: {
             wrapper: {
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "1fr 1fr", // Side by side buttons
                 gap: "1rem",
+            },
+            socialButton: {
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#1877F2',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '20px',
+                padding: '2px 16px 2px 2px', 
+                cursor: 'pointer',
+                height: '40px',
+                fontFamily: 'Roboto, Arial, sans-serif',
+                fontSize: '14px',
+                fontWeight: '500',
+            },
+            iconContainer: {
+                backgroundColor: '#FFFFFF',
+                borderRadius: '50%',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: '12px',
+            },
+            socialIcon: {
+                width: '20px',
+                height: '20px',
+            },
+            buttonText: {
+                whiteSpace: 'nowrap',
             }
-        },
+        },  
         loginText: {
             textAlign: "center",
             marginTop: "1.5rem",

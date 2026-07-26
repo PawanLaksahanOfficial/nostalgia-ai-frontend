@@ -15,25 +15,20 @@ export const HomePage: React.FC = () => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleGenerate = async () => {
-    if (!text.trim()) return;
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("Text", text);
-    if (image) formData.append("Image", image);
+const handleGenerate = async () => {
+  setLoading(true);
 
-    try {
-      const response = await generate(formData)
-      if (!response.ok) throw new Error("Failed to generate video");
-      const data = await response.json();
-      setVideoUrl(data.url);
-    } catch (error) {
-      console.error(error);
-      alert("Error generating video. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const data = await generate(text, image);
+    if (!data) throw new Error("Failed to generate video");
+    setVideoUrl(data.url);
+  } catch (error) {
+    console.error(error);
+    alert("Error generating video. Please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
    <div style={Styles.wrapper}>

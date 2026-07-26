@@ -5,7 +5,7 @@ import { InputField } from "../common/InputField";
 import { Link } from "react-router-dom";
 import { Button } from "../common/Button";
 import type { RegisterModel, RegisterValidation } from "../../models/RegisterModel";
-import { validateConfirmPassword, validateEmail, validatePassword, validateText } from "../common/validate/validateInputs";
+import { validateConfirmPassword, validateEmail, validatePassword, validateText } from "../common/validate/ValidateInputs";
 
 const initialFormInputs: RegisterModel = {
     firstName: "",
