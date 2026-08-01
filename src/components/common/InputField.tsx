@@ -10,7 +10,7 @@ interface InputProps {
   accept?: string;
   name?: string;
   value?: string;
-  validation: InputValidation,
+  validation?: InputValidation,
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -33,7 +33,7 @@ export const InputField: React.FC<InputProps> = ({type = "text", label, accept, 
         onChange={onChange} 
         style={Styles.input} />
         {((name === "password" || name === "confirmPassword") && value) && <PasswordEye style={{...Styles.passwordEye, ...(!passwordVisible && Styles.passwordEye.hidden)}} onClick={ToggleVisibility}/>}
-        {validation.invalid && <ErrorIndicator message={validation.message} styles={Styles.errorIndicator}/>}
+        {validation?.invalid && <ErrorIndicator message={validation?.message} styles={Styles.errorIndicator}/>}
     </div>
   );
 };

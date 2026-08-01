@@ -7,6 +7,7 @@ import { useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import type { RootState } from './redux/store'
 import { Login } from './components/userAuthenticate/Login'
+import { Register } from './components/userAuthenticate/Register'
 
 function App() {
   const dispatch = useDispatch();
@@ -17,6 +18,7 @@ function App() {
     const routes = useRoutes([
       { path: "/", element: <HomePage /> },
       { path: "/signIn", element: <Login /> },
+      { path: "/register", element: <Register />},
       { path: "/profile", element: isAuthenticated ? <HomePage /> : <Login /> },
     ])
     return routes;

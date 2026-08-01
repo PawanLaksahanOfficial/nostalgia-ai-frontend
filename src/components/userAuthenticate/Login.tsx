@@ -48,7 +48,7 @@ export const Login: React.FC = () => {
           </div>
           <AuthenticationBySocialApps styles={Styles.socialContainer}/>       
           <p style={Styles.signupText}>
-            Don't have an account? <a href="#signup" style={Styles.link}>Create one</a>
+            Don't have an account? <a href="/register" style={Styles.link}>Create one</a>
           </p>
         </div>
       </main>
