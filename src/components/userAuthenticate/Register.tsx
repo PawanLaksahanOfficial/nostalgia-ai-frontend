@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AuthenticationBySocialApps } from "./AuthenticationBySocialApps"
 import { useComponentStyle } from "../../hooks/useComponentStyle"
 import { InputField } from "../common/InputField";
@@ -54,6 +54,12 @@ export const Register: React.FC = () => {
         }
     }
 
+
+    useEffect(() => {
+        const allFieldsFilled = Object.values(formData).every((value) => value !== "");
+        const allFieldsValid = Object.values(validateModel).every((v) => v.valid === true);
+        setIsFormValid(allFieldsFilled && allFieldsValid);
+    }, [formData, validateModel]);
 
     const handleRegister = () => {
 
