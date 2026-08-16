@@ -1,21 +1,26 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export interface UserData {
+    userId: number;
+    firstName: string;
+    lastName: string;
+    email: string;
+    avatarUrl: string | null;
+    tier: 'free' | 'premium';
+    monthlyMemoriesUsed: number;
+    monthlyMemoriesLimit: number;
+}
+
 export interface AuthState {
     isAuthenticated: boolean;
     token: string | null;
-    userId: number | null;
-    email: string | null;
-    userName: string | null;
-    tier: "free" | "premium";
+    user: UserData | null;
 }
 
 const initialState: AuthState = {
     isAuthenticated: !!localStorage.getItem('token'),
     token: localStorage.getItem('token'),
-    userId: null,
-    email: null,
-    userName: null,
-    tier: "free",
+    user: null,
 };
 
 const authSlice = createSlice({
@@ -24,26 +29,17 @@ const authSlice = createSlice({
     reducers: {
         setCredentials(state, action: PayloadAction<{
             token: string;
-            userId?: number;
-            email?: string;
-            userName?: string;
-            tier?: "free" | "premium";
+            user: UserData;
         }>) {
             state.isAuthenticated = true;
             state.token = action.payload.token;
-            state.userId = action.payload.userId ?? null;
-            state.email = action.payload.email ?? null;
-            state.userName = action.payload.userName ?? null;
-            state.tier = action.payload.tier ?? "free";
+            state.user = action.payload.user;
             localStorage.setItem('token', action.payload.token);
         },
         logout(state) {
             state.isAuthenticated = false;
             state.token = null;
-            state.userId = null;
-            state.email = null;
-            state.userName = null;
-            state.tier = "free";
+            state.user = null;
             localStorage.removeItem('token');
         },
     },

@@ -5,6 +5,7 @@ import { useMediaQuery } from 'react-responsive'
 import { setMobile } from './redux/styleSlice'
 import { useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
+import { ProfilePage } from './pages/ProfilePage'
 import type { RootState } from './redux/store'
 import { Login } from './components/userAuthenticate/Login'
 import { Register } from './components/userAuthenticate/Register'
@@ -19,7 +20,7 @@ function App() {
       { path: "/", element: <HomePage /> },
       { path: "/signIn", element: <Login /> },
       { path: "/register", element: <Register />},
-      { path: "/profile", element: isAuthenticated ? <HomePage /> : <Login /> },
+      { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Login /> },
     ])
     return routes;
   }

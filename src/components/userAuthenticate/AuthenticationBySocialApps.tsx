@@ -1,6 +1,6 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import MetaIcon from "../../assets/svg/meta_icon.svg?react";
-import { postSocialToken } from "../../services/userServices";
+import { postSocialToken, getProfile } from "../../services/userServices";
 import { useLogin } from 'react-facebook';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -17,22 +17,37 @@ interface Props {
 export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess }) => {
     const { login } = useLogin();
     const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
         setIsProcessing(true);
+        setError("");
         try {
             const result = await postSocialToken(token, provider);
-            // Store JWT token in Redux and localStorage
-            if (result) {
-                dispatch(setCredentials({ token: result }));
-                if (onSuccess) {
-                    onSuccess(result);
+            const profile = await getProfile();
+            dispatch(setCredentials({
+                token: result.token,
+                user: {
+                    userId: profile.userId,
+                    firstName: profile.firstName,
+                    lastName: profile.lastName,
+                    email: profile.email,
+                    avatarUrl: profile.avatarUrl,
+                    tier: profile.tier,
+                    monthlyMemoriesUsed: profile.quota.monthlyMemoriesUsed,
+                    monthlyMemoriesLimit: profile.quota.monthlyMemoriesLimit,
                 }
-                navigate('/');
+            }));
+            if (onSuccess) {
+                onSuccess(result);
             }
+            navigate('/');
+        } catch (err) {
+            const message = err instanceof Error ? err.message : `${provider} authentication failed.`;
+            setError(message);
         } finally {
             setIsProcessing(false);
         }
@@ -45,18 +60,27 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
     };
 
     const handleMetaLogin = async () => {
-        const response = await login({ scope: 'email,public_profile' });
-        if (response.authResponse) {
-            handleSocialAuth(response.authResponse.accessToken, 'meta');
+        try {
+            const response = await login({ scope: 'email,public_profile' });
+            if (response.authResponse) {
+                handleSocialAuth(response.authResponse.accessToken, 'meta');
+            }
+        } catch {
+            setError("Meta login failed. Please try again.");
         }
     };
 
     return (
         <div style={styles.wrapper}>
+            {error && (
+                <div style={styles.socialErrorAlert}>
+                    {error}
+                </div>
+            )}
             {/* Google Button */}
             <div style={{ opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
-                <GoogleLogin 
-                    onSuccess={handleGoogleSuccess} 
+                <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
                     useOneTap
                     theme="filled_blue"
                     shape="pill"
@@ -64,7 +88,7 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
                 />
             </div>
             {/* Meta Button */}
-            <button 
+            <button
                 style={{...styles.socialButton, opacity: isProcessing ? 0.6 : 1}}
                 onClick={handleMetaLogin}
                 disabled={isProcessing}

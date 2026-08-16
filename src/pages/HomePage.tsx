@@ -18,17 +18,17 @@ export const HomePage: React.FC = () => {
 const handleGenerate = async () => {
   setLoading(true);
 
-  try {
-    const data = await generate(text, image);
-    if (!data) throw new Error("Failed to generate video");
-    setVideoUrl(data.url);
-  } catch (error) {
-    console.error(error);
-    alert("Error generating video. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const response = await generate(text, image)
+      if (!response) throw new Error("Failed to generate video");
+      setVideoUrl(response);
+    } catch (error) {
+      console.error(error);
+      alert("Error generating video. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
    <div style={Styles.wrapper}>

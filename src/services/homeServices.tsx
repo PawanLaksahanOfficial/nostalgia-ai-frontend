@@ -17,7 +17,11 @@ export const generate = async (text: string, image?: File | null) => {
                 }
             }
         );
-        return response.data;
+        const apiResponse = response.data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Generation failed.");
+        }
+        return apiResponse.data;
     } catch (error) {
         console.error("Error generating nostalgia:", error);
         return null;
@@ -37,7 +41,11 @@ export const createMemoryVideo = async (title: string, storyText: string, musicM
                 }
             }
         );
-        return response.data;
+        const apiResponse = response.data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Failed to create memory.");
+        }
+        return apiResponse.data;
     } catch (error) {
         console.error("Error creating memory video:", error);
         throw error;
@@ -55,7 +63,11 @@ export const getMemoryStatus = async (jobId: number) => {
                 }
             }
         );
-        return response.data;
+        const apiResponse = response.data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Failed to get memory status.");
+        }
+        return apiResponse.data;
     } catch (error) {
         console.error("Error getting memory status:", error);
         return null;
@@ -73,7 +85,11 @@ export const getMyMemories = async () => {
                 }
             }
         );
-        return response.data;
+        const apiResponse = response.data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Failed to fetch memories.");
+        }
+        return apiResponse.data;
     } catch (error) {
         console.error("Error fetching memories:", error);
         return [];

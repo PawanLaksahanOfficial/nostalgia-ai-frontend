@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthenticationBySocialApps } from "./AuthenticationBySocialApps"
 import { useComponentStyle } from "../../hooks/useComponentStyle"
 import { InputField } from "../common/InputField";
-import { Link } from "react-router-dom";
 import { Button } from "../common/Button";
 import type { RegisterModel, RegisterValidation } from "../../models/RegisterModel";
 import { validateConfirmPassword, validateEmail, validatePassword, validateText } from "../common/validate/ValidateInputs";
+import { setCredentials } from "../../redux/authSlice";
+import { register } from "../../services/userServices";
 
 const initialFormInputs: RegisterModel = {
     firstName: "",
@@ -26,8 +29,12 @@ const initialRegisterValidation: RegisterValidation = {
 export const Register: React.FC = () => {
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
     const Styles = useComponentStyle("register");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<RegisterModel>(initialFormInputs);
-     const [validateModel, setValidateModel] = useState<RegisterValidation>(initialRegisterValidation);
+    const [validateModel, setValidateModel] = useState<RegisterValidation>(initialRegisterValidation);
+    const [error, setError] = useState("");
+    const [submitting, setSubmitting] = useState(false);
 
     const handleChange = ({target}: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = target;
@@ -61,8 +68,24 @@ export const Register: React.FC = () => {
         setIsFormValid(allFieldsFilled && allFieldsValid);
     }, [formData, validateModel]);
 
-    const handleRegister = () => {
-
+    const handleRegister = async () => {
+        setError("");
+        setSubmitting(true);
+        try {
+            const result = await register({
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email,
+                password: formData.password,
+            });
+            dispatch(setCredentials({ token: result.token, user: result.user }));
+            navigate("/");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Registration failed.";
+            setError(message);
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     return(
@@ -73,6 +96,9 @@ export const Register: React.FC = () => {
                         <h2 style={Styles.title}>Create Account</h2>
                         <p style={Styles.subtitle}>Join Nostalgia AI and start creating memories</p>
                     </header>
+                    {error && (
+                        <div style={Styles.errorAlert}>{error}</div>
+                    )}
                     <div style={Styles.form}>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <InputField
@@ -118,7 +144,8 @@ export const Register: React.FC = () => {
                             label="Create Account"
                             type="button"
                             variant="primary"
-                            disabled={!isFormValid}
+                            disabled={!isFormValid || submitting}
+                            loading={submitting}
                             onClick={handleRegister}
                         />
                     </div>
