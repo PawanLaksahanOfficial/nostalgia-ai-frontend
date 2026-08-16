@@ -40,6 +40,14 @@ export const register = {
             textAlign: "center",
             marginBottom: "2rem",
         },
+        errorAlert: {
+            padding: "0.75rem",
+            marginBottom: "1rem",
+            borderRadius: "5px",
+            backgroundColor: "#fef2f2",
+            color: "#dc2626",
+            border: "1px solid #fecaca",
+        },
         form: {
             display: "flex",
             flexDirection: "column",
@@ -57,6 +65,17 @@ export const register = {
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr", // Side by side buttons
                 gap: "1rem",
+            },
+            socialErrorAlert: {
+                gridColumn: "1 / -1",
+                padding: "0.5rem",
+                marginBottom: "0.75rem",
+                borderRadius: "5px",
+                backgroundColor: "#fef2f2",
+                color: "#dc2626",
+                border: "1px solid #fecaca",
+                fontSize: "0.875rem",
+                textAlign: "center" as const,
             },
             socialButton: {
                 display: 'flex',
