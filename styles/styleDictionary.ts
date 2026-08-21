@@ -9,6 +9,8 @@ import { register } from "./register";
 import { profile } from "./profile";
 import { errorPage } from "./errorPage";
 import { button } from "./button";
+import { themeToggle } from "./themeToggle";
+import { toastContainer } from "./toastContainer";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -29,3 +31,5 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("profile", profile)
     styleDictionary.set("errorPage", errorPage)
     styleDictionary.set("button", button)
+    styleDictionary.set("themeToggle", themeToggle)
+    styleDictionary.set("toastContainer", toastContainer)

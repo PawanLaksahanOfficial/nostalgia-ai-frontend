@@ -3,13 +3,13 @@ export const footer = {
     wrapper: {
       padding: "1rem",
       textAlign: "center",
-      backgroundColor: "#fff",
-      borderTop: "1px solid #e5e7eb",
+      backgroundColor: "var(--color-bg-card)",
+      borderTop: "1px solid var(--color-border)",
       marginTop: "2rem",
     },
     text: {
       fontSize: "0.9rem",
-      color: "#6b7280",
+      color: "var(--color-text-secondary)",
     },
   },
   desktop: {

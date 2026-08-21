@@ -5,35 +5,40 @@ export const header = {
       justifyContent: "space-between",
       alignItems: "center",
       padding: "1rem",
-      backgroundColor: "#ffffff",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+      backgroundColor: "var(--color-bg-card)",
+      boxShadow: "var(--shadow-card)",
       overflow: "hidden"
     },
     logo: {
       fontSize: "1.3rem",
       fontWeight: 700,
-      color: "#1f2937",
+      fontFamily: "var(--font-heading)",
+      color: "var(--color-text-primary)",
     },
     image: {
-
+      width: "120px",
+      height: "34px",
+      objectFit: "cover",
+      objectPosition: "center",
     },
     right: {
       display: "flex",
       alignItems: "center",
+      gap: "0.75rem",
     },
     signIn: {
       background: "transparent",
-      border: "1px solid #1f2937",
+      border: "1px solid var(--color-accent)",
       padding: "0.4rem 0.8rem",
       borderRadius: "8px",
       cursor: "pointer",
-      color: "black"
+      color: "var(--color-accent)",
     },
     profileCircle: {
       width: "36px",
       height: "36px",
       borderRadius: "50%",
-      background: "#1f2937",
+      background: "var(--color-accent)",
       cursor: "pointer",
     },
     userSection: {
@@ -42,30 +47,31 @@ export const header = {
       gap: "1rem",
     },
     userName: {
-      color: "#1f2937",
+      color: "var(--color-text-primary)",
       fontSize: "0.9rem",
       fontWeight: 500,
     },
     signOut: {
       background: "transparent",
-      border: "1px solid #1f2937",
+      border: "1px solid var(--color-border-strong)",
       padding: "0.4rem 0.8rem",
       borderRadius: "8px",
       cursor: "pointer",
-      color: "black",
+      color: "var(--color-text-primary)",
     },
   },
   desktop: {
     wrapper: {
       padding: "1rem 4rem",
-      height: "3vw"
     },
     logo: {
       fontSize: "1.6rem",
     },
     image: {
-      width: "16vw",
-      height: "16vw"
+      width: "150px",
+      height: "42px",
+      objectFit: "cover",
+      objectPosition: "center",
     },
   },
 };

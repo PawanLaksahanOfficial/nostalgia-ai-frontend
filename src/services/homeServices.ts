@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+import { apiClient } from "./apiClient";
 
 export const generate = async (text: string, image?: File | null) => {
     try {
@@ -8,8 +6,8 @@ export const generate = async (text: string, image?: File | null) => {
         formData.append("Text", text);
         if (image) formData.append("Image", image);
 
-        const response = await axios.post(
-            baseUrl + "/api/memories/generate", 
+        const response = await apiClient.post(
+            "/api/memories/generate",
             formData,
             {
                 headers: {
@@ -30,16 +28,9 @@ export const generate = async (text: string, image?: File | null) => {
 
 export const createMemoryVideo = async (title: string, storyText: string, musicMood?: string) => {
     try {
-        const token = localStorage.getItem('token');
-        const response = await axios.post(
-            baseUrl + "/api/memories/create",
-            { title, storyText, musicMood },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }
+        const response = await apiClient.post(
+            "/api/memories/create",
+            { title, storyText, musicMood }
         );
         const apiResponse = response.data;
         if (!apiResponse.success) {
@@ -54,15 +45,7 @@ export const createMemoryVideo = async (title: string, storyText: string, musicM
 
 export const getMemoryStatus = async (jobId: number) => {
     try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(
-            baseUrl + `/api/memories/status/${jobId}`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        );
+        const response = await apiClient.get(`/api/memories/status/${jobId}`);
         const apiResponse = response.data;
         if (!apiResponse.success) {
             throw new Error(apiResponse.message || "Failed to get memory status.");
@@ -76,15 +59,7 @@ export const getMemoryStatus = async (jobId: number) => {
 
 export const getMyMemories = async () => {
     try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(
-            baseUrl + "/api/memories/my",
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            }
-        );
+        const response = await apiClient.get("/api/memories/my");
         const apiResponse = response.data;
         if (!apiResponse.success) {
             throw new Error(apiResponse.message || "Failed to fetch memories.");

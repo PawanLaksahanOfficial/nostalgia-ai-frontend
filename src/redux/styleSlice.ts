@@ -5,9 +5,17 @@ export interface styleState {
     theme: "light" | "dark"
 }
 
+const getInitialTheme = (): "light" | "dark" => {
+    const stored = localStorage.getItem("theme");
+    if (stored === "light" || stored === "dark") {
+        return stored;
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
 const initialState: styleState =  {
     isMobile: false,
-    theme: "light",
+    theme: getInitialTheme(),
 }
 
 const styleSlice = createSlice({

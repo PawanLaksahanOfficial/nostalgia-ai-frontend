@@ -5,22 +5,36 @@ export const button = {
       padding: "0.8rem",
       fontSize: "1rem",
       border: "none",
-      borderRadius: "8px",
+      borderRadius: "10px",
       cursor: "pointer",
       fontWeight: 600,
+      fontFamily: "var(--font-body)",
       transition: "all 0.2s ease-in-out",
       marginTop: "1rem",
     },
     primary: {
-      backgroundColor: "#4f46e5",
+      backgroundColor: "var(--color-accent)",
       color: "#fff",
     },
     secondary: {
-      backgroundColor: "#e5e7eb",
-      color: "#111827",
+      backgroundColor: "var(--color-bg-card-alt)",
+      color: "var(--color-text-primary)",
+      border: "1px solid var(--color-border)",
+    },
+    outline: {
+      backgroundColor: "transparent",
+      color: "var(--color-accent)",
+      border: "1.5px solid var(--color-accent)",
+    },
+    dangerOutline: {
+      backgroundColor: "transparent",
+      color: "var(--color-danger)",
+      border: "1.5px solid var(--color-danger)",
     },
     disabled: {
-      backgroundColor: "#9ca3af",
+      backgroundColor: "var(--color-text-muted)",
+      color: "#fff",
+      border: "none",
       cursor: "not-allowed",
       opacity: 0.7,
     },
@@ -30,11 +44,6 @@ export const button = {
       width: "auto",
       padding: "0.8rem 2rem",
       fontSize: "1.05rem",
-    },
-    primary: {
-      ":hover": {
-        backgroundColor: "#4338ca",
-      },
     },
   },
 };

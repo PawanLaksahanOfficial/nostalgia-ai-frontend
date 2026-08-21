@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/authSlice";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Header: React.FC = () => {
   const Styles = useComponentStyle("header");
@@ -30,12 +31,13 @@ export const Header: React.FC = () => {
         {isAuthenticated ? (
           <div style={Styles.userSection}>
             <span style={Styles.userName}>{user?.firstName || 'User'}</span>
-            <div style={Styles.profileCircle} onClick={() => navigate('/profile')}></div>
-            <button style={Styles.signOut} onClick={handleSignOut}>Sign Out</button>
+            <div className="icon-btn" style={Styles.profileCircle} onClick={() => navigate('/profile')}></div>
+            <button className="btn btn-secondary" style={Styles.signOut} onClick={handleSignOut}>Sign Out</button>
           </div>
         ) : (
-          <button style={Styles.signIn} onClick={handleSignIn}>Sign In</button>
+          <button className="btn btn-outline" style={Styles.signIn} onClick={handleSignIn}>Sign In</button>
         )}
+        <ThemeToggle />
       </div>
     </header>
   );

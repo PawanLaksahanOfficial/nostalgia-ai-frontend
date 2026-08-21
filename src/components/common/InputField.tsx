@@ -25,12 +25,13 @@ export const InputField: React.FC<InputProps> = ({type = "text", label, accept, 
   return (
     <div style={Styles.container}>
       {label && <label style={Styles.label}>{label}</label>}
-      <input 
-        type={type} 
+      <input
+        type={type}
         accept={accept}
-        name={name} 
-        value={value} 
-        onChange={onChange} 
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="input"
         style={Styles.input} />
         {((name === "password" || name === "confirmPassword") && value) && <PasswordEye style={{...Styles.passwordEye, ...(!passwordVisible && Styles.passwordEye.hidden)}} onClick={ToggleVisibility}/>}
         {validation?.invalid && <ErrorIndicator message={validation?.message} styles={Styles.errorIndicator}/>}

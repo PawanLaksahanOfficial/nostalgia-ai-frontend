@@ -35,7 +35,7 @@ export const Login: React.FC = () => {
   return (
     <div style={Styles.wrapper}>
       <main style={Styles.content}>
-        <div style={Styles.card}>
+        <div style={Styles.card} className="card animate-fade-in-up">
           <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={Styles.title}>Welcome Back</h2>
             <p style={Styles.subtitle}>Enter your details to access your account</p>
@@ -55,7 +55,7 @@ export const Login: React.FC = () => {
                 type="password"
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <a href="#forgot" style={Styles.forgotLink}>Forgot password?</a>
+              <a href="#forgot" style={Styles.forgotLink} className="link">Forgot password?</a>
             </div>
             <Button
               label="Sign In"
@@ -72,7 +72,7 @@ export const Login: React.FC = () => {
           </div>
           <AuthenticationBySocialApps styles={Styles.socialContainer}/>
           <p style={Styles.signupText}>
-            Don't have an account? <a href="/register" style={Styles.link}>Create one</a>
+            Don't have an account? <a href="/register" style={Styles.link} className="link">Create one</a>
           </p>
         </div>
       </main>

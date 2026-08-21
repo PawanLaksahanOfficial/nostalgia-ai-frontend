@@ -9,11 +9,14 @@ import { ProfilePage } from './pages/ProfilePage'
 import type { RootState } from './redux/store'
 import { Login } from './components/userAuthenticate/Login'
 import { Register } from './components/userAuthenticate/Register'
+import { useTheme } from './hooks/useTheme'
+import { ToastContainer } from './components/common/ToastContainer'
 
 function App() {
   const dispatch = useDispatch();
   const isMobile = useMediaQuery({ query: "(max-width: 786px)"});
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  useTheme();
 
   const AppRoutes = () => {
     const routes = useRoutes([
@@ -30,7 +33,10 @@ function App() {
   }, [isMobile, dispatch])
 
   return (
-    <AppRoutes />
+    <>
+      <AppRoutes />
+      <ToastContainer />
+    </>
   )
 }
 

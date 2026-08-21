@@ -6,11 +6,15 @@ export const videoPreview = {
     },
     title: {
       fontSize: "1.2rem",
+      fontFamily: "var(--font-heading)",
+      color: "var(--color-text-primary)",
       marginBottom: "0.5rem",
     },
     video: {
       width: "100%",
-      borderRadius: "10px",
+      borderRadius: "12px",
+      border: "1px solid var(--color-border)",
+      boxShadow: "var(--shadow-card)",
     },
   },
   desktop: {

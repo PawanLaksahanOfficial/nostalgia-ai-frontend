@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+import { apiClient } from "./apiClient";
 
 export interface AuthResult {
     token: string;
@@ -42,8 +40,7 @@ export interface MemoryItem {
 }
 
 export const postSocialToken = async (token: string, provider: 'google' | 'meta'): Promise<AuthResult> => {
-    const endpoint = "/api/user/socialLoginValidate";
-    const response = await axios.post(baseUrl + endpoint, {
+    const response = await apiClient.post("/api/user/socialLoginValidate", {
         tokenId: token,
         provider: provider
     });
@@ -55,7 +52,7 @@ export const postSocialToken = async (token: string, provider: 'google' | 'meta'
 };
 
 export const register = async (data: { firstName: string; lastName: string; email: string; password: string }): Promise<AuthResult> => {
-    const response = await axios.post(baseUrl + "/api/auth/register", data);
+    const response = await apiClient.post("/api/auth/register", data);
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Registration failed.");
@@ -64,7 +61,7 @@ export const register = async (data: { firstName: string; lastName: string; emai
 };
 
 export const login = async (data: { email: string; password: string }): Promise<AuthResult> => {
-    const response = await axios.post(baseUrl + "/api/auth/login", data);
+    const response = await apiClient.post("/api/auth/login", data);
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Login failed.");
@@ -73,10 +70,7 @@ export const login = async (data: { email: string; password: string }): Promise<
 };
 
 export const getProfile = async (): Promise<ProfileData> => {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(baseUrl + "/api/profile/myProfile", {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await apiClient.get("/api/profile/myProfile");
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Failed to load profile.");
@@ -85,10 +79,7 @@ export const getProfile = async (): Promise<ProfileData> => {
 };
 
 export const updateProfile = async (data: { firstName?: string; lastName?: string; avatarUrl?: string }): Promise<void> => {
-    const token = localStorage.getItem('token');
-    const response = await axios.put(baseUrl + "/api/profile/myProfile", data, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await apiClient.put("/api/profile/myProfile", data);
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Failed to update profile.");
@@ -96,10 +87,7 @@ export const updateProfile = async (data: { firstName?: string; lastName?: strin
 };
 
 export const changePassword = async (data: { currentPassword: string; newPassword: string }): Promise<void> => {
-    const token = localStorage.getItem('token');
-    const response = await axios.put(baseUrl + "/api/profile/change-password", data, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await apiClient.put("/api/profile/change-password", data);
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Failed to change password.");
@@ -107,10 +95,7 @@ export const changePassword = async (data: { currentPassword: string; newPasswor
 };
 
 export const getMyMemories = async (): Promise<MemoryItem[]> => {
-    const token = localStorage.getItem('token');
-    const response = await axios.get(baseUrl + "/api/profile/memories", {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await apiClient.get("/api/profile/memories");
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Failed to load memories.");
@@ -119,10 +104,7 @@ export const getMyMemories = async (): Promise<MemoryItem[]> => {
 };
 
 export const createCheckoutSession = async (priceId: string, successUrl: string, cancelUrl: string): Promise<{ sessionId: string; sessionUrl: string }> => {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(baseUrl + "/api/subscription/checkout", { priceId, successUrl, cancelUrl }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await apiClient.post("/api/subscription/checkout", { priceId, successUrl, cancelUrl });
     const apiResponse = response.data;
     if (!apiResponse.success) {
         throw new Error(apiResponse.message || "Failed to create checkout session.");
