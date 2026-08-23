@@ -1,11 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --color-bg-page: #FDF8F3;
+  --color-bg-page-alt: #F7EEE4;
+  --color-bg-card: #FFFFFF;
+  --color-bg-card-alt: #FFF9F2;
+  --color-bg-input: #FFFFFF;
+
+  --color-text-primary: #1C1917;
+  --color-text-secondary: #6B5F57;
+  --color-text-muted: #9C8F86;
+  --color-text-inverse: #FDF8F3;
+
+  --color-accent: #D97B4A;
+  --color-accent-hover: #C36A3A;
+  --color-accent-active: #B15F32;
+  --color-accent-soft: #FBEAE0;
+
+  --color-highlight: #F4A94E;
+  --color-highlight-soft: #FDF1DE;
+
+  --color-border: #E8DDD3;
+  --color-border-strong: #D9C9BB;
+  --color-focus-ring: #D97B4A;
+
+  --color-danger: #DC4C3E;
+  --color-danger-soft: #FBEAE7;
+  --color-success: #3F9142;
+  --color-success-soft: #E8F3E3;
+  --color-warning: #E08E2B;
+  --color-warning-soft: #FCEFDD;
+
+  --shadow-card: 0 4px 20px rgba(28, 25, 23, 0.06);
+  --shadow-card-hover: 0 8px 30px rgba(28, 25, 23, 0.10);
+  --shadow-modal: 0 20px 40px rgba(28, 25, 23, 0.18);
+
+  --overlay-glass-bg: rgba(255, 255, 255, 0.92);
+  --overlay-glass-tint: rgba(253, 248, 243, 0.45);
+
+  --font-heading: "Fraunces", Georgia, serif;
+  --font-body: "Inter", system-ui, Avenir, Helvetica, Arial, sans-serif;
+
+  font-family: var(--font-body);
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-image: url(/images/nostalgic_image.avif);
+  color-scheme: light;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,56 +53,71 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-theme="dark"] {
+  --color-bg-page: #1C1917;
+  --color-bg-page-alt: #241F1C;
+  --color-bg-card: #2A2422;
+  --color-bg-card-alt: #332B27;
+  --color-bg-input: #2F2825;
+
+  --color-text-primary: #F5EDE5;
+  --color-text-secondary: #C9B8AC;
+  --color-text-muted: #94847A;
+  --color-text-inverse: #1C1917;
+
+  --color-accent: #E28B5C;
+  --color-accent-hover: #EE9A6C;
+  --color-accent-active: #F0A67C;
+  --color-accent-soft: rgba(217, 123, 74, 0.18);
+
+  --color-highlight: #F4A94E;
+  --color-highlight-soft: rgba(244, 169, 78, 0.16);
+
+  --color-border: #3D3430;
+  --color-border-strong: #4C423C;
+  --color-focus-ring: #E28B5C;
+
+  --color-danger: #E8695A;
+  --color-danger-soft: rgba(232, 105, 90, 0.15);
+  --color-success: #5CB860;
+  --color-success-soft: rgba(92, 184, 96, 0.15);
+  --color-warning: #F0A63E;
+  --color-warning-soft: rgba(240, 166, 62, 0.15);
+
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.35);
+  --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-modal: 0 20px 45px rgba(0, 0, 0, 0.55);
+
+  --overlay-glass-bg: rgba(42, 36, 33, 0.88);
+  --overlay-glass-tint: rgba(28, 25, 23, 0.55);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--color-accent);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--color-accent-hover);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-family: var(--font-body);
+  background-color: var(--color-bg-page);
+  color: var(--color-text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { useComponentStyle } from "../../hooks/useComponentStyle";
+import { Button } from "./Button";
 
 interface ErrorPageProps {
     message: string;
@@ -17,14 +18,10 @@ export const ErrorPage: React.FC<ErrorPageProps> = ({ message, onRetry, onGoHome
             <p style={Styles.message}>{message}</p>
             <div style={Styles.buttonGroup}>
                 {onRetry && (
-                    <button onClick={onRetry} style={Styles.retryButton}>
-                        Try Again
-                    </button>
+                    <Button label="Try Again" type="button" variant="primary" disabled={false} onClick={onRetry} />
                 )}
                 {onGoHome && (
-                    <button onClick={onGoHome} style={Styles.homeButton}>
-                        Go Home
-                    </button>
+                    <Button label="Go Home" type="button" variant="outline" disabled={false} onClick={onGoHome} />
                 )}
             </div>
         </div>

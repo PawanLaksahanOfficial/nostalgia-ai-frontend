@@ -13,7 +13,7 @@ export const TextArea: React.FC<TextAreaProps> = ({ label, value, onChange }) =>
   return (
     <div style={Styles.container}>
       {label && <label style={Styles.label}>{label}</label>}
-      <textarea value={value} onChange={onChange} style={Styles.textarea} />
+      <textarea value={value} onChange={onChange} className="textarea" style={Styles.textarea} />
     </div>
   );
 };

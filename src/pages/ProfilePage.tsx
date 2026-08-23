@@ -7,6 +7,10 @@ import { logout } from "../redux/authSlice";
 import { getProfile, updateProfile, changePassword, getMyMemories, createCheckoutSession } from "../services/userServices";
 import type { ProfileData, MemoryItem } from "../services/userServices";
 import { ErrorPage } from "../components/common/ErrorPage";
+import { Header } from "../components/common/Header";
+import { InputField } from "../components/common/InputField";
+import { Button } from "../components/common/Button";
+import { useToast } from "../hooks/useToast";
 
 const initialProfileForm = { firstName: "", lastName: "" };
 const initialPasswordForm = { currentPassword: "", newPassword: "" };
@@ -15,6 +19,7 @@ export const ProfilePage: React.FC = () => {
   const Styles = useComponentStyle("profile");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [memories, setMemories] = useState<MemoryItem[]>([]);
@@ -63,13 +68,13 @@ export const ProfilePage: React.FC = () => {
       setEditing(false);
       await loadData();
     } catch (error: any) {
-      alert(error.message || "Failed to update profile.");
+      toast.error(error.message || "Failed to update profile.");
     }
   };
 
   const handleChangePassword = async () => {
     if (!passwordForm.currentPassword || !passwordForm.newPassword) {
-      alert("Please fill in both password fields.");
+      toast.error("Please fill in both password fields.");
       return;
     }
     setChangingPassword(true);
@@ -79,9 +84,9 @@ export const ProfilePage: React.FC = () => {
         newPassword: passwordForm.newPassword
       });
       setPasswordForm(initialPasswordForm);
-      alert("Password changed successfully!");
+      toast.success("Password changed successfully!");
     } catch (error: any) {
-      alert(error.message || "Failed to change password.");
+      toast.error(error.message || "Failed to change password.");
     } finally {
       setChangingPassword(false);
     }
@@ -100,18 +105,33 @@ export const ProfilePage: React.FC = () => {
       const { sessionUrl } = await createCheckoutSession(priceId, successUrl, cancelUrl);
       window.location.href = sessionUrl;
     } catch (error: any) {
-      alert(error.message || "Failed to start checkout.");
+      toast.error(error.message || "Failed to start checkout.");
     }
   };
 
   if (loading) {
-    return <div style={Styles.loading}>Loading...</div>;
+    return (
+      <>
+        <Header />
+        <div style={Styles.loading}>Loading...</div>
+      </>
+    );
   }
   if (pageError) {
-    return <ErrorPage message={pageError} onRetry={loadData} onGoHome={() => navigate('/')} />;
+    return (
+      <>
+        <Header />
+        <ErrorPage message={pageError} onRetry={loadData} onGoHome={() => navigate('/')} />
+      </>
+    );
   }
   if (!profile) {
-    return <ErrorPage message="Unable to load profile data." onRetry={loadData} onGoHome={() => navigate('/')} />;
+    return (
+      <>
+        <Header />
+        <ErrorPage message="Unable to load profile data." onRetry={loadData} onGoHome={() => navigate('/')} />
+      </>
+    );
   }
 
   const usagePercentage = profile.quota
@@ -120,35 +140,30 @@ export const ProfilePage: React.FC = () => {
 
   return (
     <div style={Styles.wrapper}>
+      <Header />
       <main style={Styles.content}>
-        <div style={Styles.card}>
+        <div style={Styles.card} className="card animate-fade-in-up">
           <h1 style={Styles.title}>My Profile</h1>
 
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Account Information</h2>
             {editing ? (
               <div style={Styles.form}>
-                <div style={Styles.inputGroup}>
-                  <label style={Styles.label}>First Name</label>
-                  <input
-                    type="text"
+                <div style={Styles.fieldRow}>
+                  <InputField
+                    label="First Name"
                     value={profileForm.firstName}
                     onChange={(e) => setProfileForm(prev => ({ ...prev, firstName: e.target.value }))}
-                    style={Styles.input}
                   />
-                </div>
-                <div style={Styles.inputGroup}>
-                  <label style={Styles.label}>Last Name</label>
-                  <input
-                    type="text"
+                  <InputField
+                    label="Last Name"
                     value={profileForm.lastName}
                     onChange={(e) => setProfileForm(prev => ({ ...prev, lastName: e.target.value }))}
-                    style={Styles.input}
                   />
                 </div>
                 <div style={Styles.buttonGroup}>
-                  <button style={Styles.primaryButton} onClick={handleUpdateProfile}>Save</button>
-                  <button style={Styles.secondaryButton} onClick={() => setEditing(false)}>Cancel</button>
+                  <Button label="Save" type="button" variant="primary" disabled={false} onClick={handleUpdateProfile} />
+                  <Button label="Cancel" type="button" variant="secondary" disabled={false} onClick={() => setEditing(false)} />
                 </div>
               </div>
             ) : (
@@ -156,7 +171,7 @@ export const ProfilePage: React.FC = () => {
                 <p><strong>Name:</strong> {profile.firstName} {profile.lastName}</p>
                 <p><strong>Email:</strong> {profile.email}</p>
                 <p><strong>Tier:</strong> <span style={profile.tier === 'premium' ? Styles.premiumBadge : Styles.freeBadge}>{profile.tier}</span></p>
-                <button style={Styles.primaryButton} onClick={() => setEditing(true)}>Edit Profile</button>
+                <Button label="Edit Profile" type="button" variant="primary" disabled={false} onClick={() => setEditing(true)} />
               </div>
             )}
           </div>
@@ -184,7 +199,7 @@ export const ProfilePage: React.FC = () => {
                   <p style={Styles.watermarkNote}>Videos will include a "Made with Nostalgia AI" watermark</p>
                 )}
                 {profile.tier === 'free' && (
-                  <button style={Styles.upgradeButton} onClick={handleUpgrade}>Upgrade to Premium</button>
+                  <Button label="Upgrade to Premium" type="button" variant="primary" disabled={false} onClick={handleUpgrade} />
                 )}
               </div>
             )}
@@ -193,31 +208,28 @@ export const ProfilePage: React.FC = () => {
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Change Password</h2>
             <div style={Styles.form}>
-              <div style={Styles.inputGroup}>
-                <label style={Styles.label}>Current Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
-                  style={Styles.input}
-                />
-              </div>
-              <div style={Styles.inputGroup}>
-                <label style={Styles.label}>New Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
-                  style={Styles.input}
-                />
-              </div>
-              <button
-                style={Styles.primaryButton}
-                onClick={handleChangePassword}
+              <InputField
+                label="Current Password"
+                name="currentPassword"
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, currentPassword: e.target.value }))}
+              />
+              <InputField
+                label="New Password"
+                name="newPassword"
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+              />
+              <Button
+                label="Change Password"
+                type="button"
+                variant="primary"
                 disabled={changingPassword}
-              >
-                {changingPassword ? "Changing..." : "Change Password"}
-              </button>
+                loading={changingPassword}
+                onClick={handleChangePassword}
+              />
             </div>
           </div>
 
@@ -237,13 +249,13 @@ export const ProfilePage: React.FC = () => {
                       </p>
                       <span style={{
                         ...Styles.statusBadge,
-                        backgroundColor: memory.status === 'Completed' ? '#10b981' : memory.status === 'Processing' ? '#f59e0b' : '#6b7280'
+                        backgroundColor: memory.status === 'Completed' ? 'var(--color-success)' : memory.status === 'Processing' ? 'var(--color-warning)' : 'var(--color-text-muted)'
                       }}>
                         {memory.status}
                       </span>
                     </div>
                     {memory.hasVideo && (
-                      <button style={Styles.downloadButton}>Download</button>
+                      <Button label="Download" type="button" variant="outline" disabled={false} />
                     )}
                   </div>
                 ))}
@@ -252,7 +264,7 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div style={Styles.footer}>
-            <button style={Styles.signOutButton} onClick={handleSignOut}>Sign Out</button>
+            <Button label="Sign Out" type="button" variant="dangerOutline" disabled={false} onClick={handleSignOut} />
           </div>
         </div>
       </main>

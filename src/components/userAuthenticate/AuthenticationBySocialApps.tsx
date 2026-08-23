@@ -3,9 +3,10 @@ import MetaIcon from "../../assets/svg/meta_icon.svg?react";
 import { postSocialToken, getProfile } from "../../services/userServices";
 import { useLogin } from 'react-facebook';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setCredentials } from '../../redux/authSlice';
 import { useNavigate } from 'react-router-dom';
+import type { RootState } from '../../redux/store';
 
 interface Props {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,6 +21,7 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
     const [error, setError] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { theme } = useSelector((state: RootState) => state.style);
 
     // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
@@ -77,18 +79,17 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
                     {error}
                 </div>
             )}
-            {/* Google Button */}
-            <div style={{ opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
+            <div style={{ ...styles.googleWrapper, opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
                 <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     useOneTap
-                    theme="filled_blue"
+                    theme={theme === "dark" ? "filled_black" : "filled_blue"}
                     shape="pill"
                     text="continue_with"
                 />
             </div>
-            {/* Meta Button */}
             <button
+                className="btn-social"
                 style={{...styles.socialButton, opacity: isProcessing ? 0.6 : 1}}
                 onClick={handleMetaLogin}
                 disabled={isProcessing}

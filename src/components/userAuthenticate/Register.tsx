@@ -91,7 +91,7 @@ export const Register: React.FC = () => {
     return(
         <div style={Styles.wrapper}>
             <main style={Styles.content}>
-                <div style={Styles.card}>
+                <div style={Styles.card} className="card animate-fade-in-up">
                     <header>
                         <h2 style={Styles.title}>Create Account</h2>
                         <p style={Styles.subtitle}>Join Nostalgia AI and start creating memories</p>
@@ -158,8 +158,9 @@ export const Register: React.FC = () => {
                     <p style={Styles.loginText}>
                         Already have an account?{" "}
                         <Link
-                            to={"/signIn"} 
-                            style={Styles.link} 
+                            to={"/signIn"}
+                            style={Styles.link}
+                            className="link"
                         >
                             Log In
                         </Link>

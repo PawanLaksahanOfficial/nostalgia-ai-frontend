@@ -12,8 +12,8 @@ export const login = {
         backgroundOverlay: {
             position: "absolute",
             inset: 0,
-            backgroundColor: "rgba(255, 255, 255, 0.4)", // Lightens the busy background
-            backdropFilter: "blur(8px)", // Modern "Glass" effect
+            backgroundColor: "var(--overlay-glass-tint)",
+            backdropFilter: "blur(8px)",
         },
         content: {
             zIndex: 1,
@@ -26,30 +26,32 @@ export const login = {
         card: {
             width: "100%",
             maxWidth: "420px",
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            backgroundColor: "var(--overlay-glass-bg)",
+            backdropFilter: "blur(10px)",
             padding: "2.5rem 2rem",
-            borderRadius: "24px", // More rounded for modern feel
-            boxShadow: "0 20px 40px rgba(0,0,0,0.15)",
-            border: "1px solid rgba(255,255,255,0.3)",
+            borderRadius: "24px",
+            boxShadow: "var(--shadow-modal)",
+            border: "1px solid var(--color-border)",
         },
         title: {
             fontSize: "2rem",
             fontWeight: "800",
-            color: "#1a1a1a",
+            fontFamily: "var(--font-heading)",
+            color: "var(--color-text-primary)",
             letterSpacing: "-0.5px",
             marginBottom: "0.5rem",
         },
         subtitle: {
-            color: "#666",
+            color: "var(--color-text-secondary)",
             fontSize: "0.95rem",
         },
         errorAlert: {
             padding: "0.75rem",
             marginBottom: "1rem",
-            borderRadius: "5px",
-            backgroundColor: "#fef2f2",
-            color: "#dc2626",
-            border: "1px solid #fecaca",
+            borderRadius: "8px",
+            backgroundColor: "var(--color-danger-soft)",
+            color: "var(--color-danger)",
+            border: "1px solid var(--color-danger)",
         },
         inputSection: {
             display: "flex",
@@ -58,7 +60,7 @@ export const login = {
         },
         forgotLink: {
             fontSize: "0.8rem",
-            color: "#4285F4",
+            color: "var(--color-accent)",
             textDecoration: "none",
             fontWeight: 600,
             float: "right",
@@ -69,22 +71,28 @@ export const login = {
             alignItems: "center",
             margin: "2rem 0",
         },
-        dividerLine: { flex: 1, height: "1px", backgroundColor: "#eee" },
-        dividerText: { padding: "0 10px", fontSize: "0.75rem", color: "#aaa", fontWeight: 700 },
+        dividerLine: { flex: 1, height: "1px", backgroundColor: "var(--color-border)" },
+        dividerText: { padding: "0 10px", fontSize: "0.75rem", color: "var(--color-text-muted)", fontWeight: 700 },
         socialContainer: {
             wrapper: {
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr", // Side by side buttons
-                gap: "1rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+                width: "100%",
+            },
+            googleWrapper: {
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
             },
             socialErrorAlert: {
-                gridColumn: "1 / -1",
+                width: "100%",
                 padding: "0.5rem",
                 marginBottom: "0.75rem",
-                borderRadius: "5px",
-                backgroundColor: "#fef2f2",
-                color: "#dc2626",
-                border: "1px solid #fecaca",
+                borderRadius: "8px",
+                backgroundColor: "var(--color-danger-soft)",
+                color: "var(--color-danger)",
+                border: "1px solid var(--color-danger)",
                 fontSize: "0.875rem",
                 textAlign: "center" as const,
             },
@@ -95,11 +103,13 @@ export const login = {
             socialButton: {
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
+                width: '100%',
                 backgroundColor: '#1877F2',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '20px',
-                padding: '2px 16px 2px 2px', 
+                padding: '2px 16px 2px 2px',
                 cursor: 'pointer',
                 height: '40px',
                 fontFamily: 'Roboto, Arial, sans-serif',
@@ -126,14 +136,14 @@ export const login = {
             buttonText: {
                 whiteSpace: 'nowrap',
             }
-        },        
+        },
         signupText: {
             textAlign: "center",
             marginTop: "2rem",
             fontSize: "0.9rem",
-            color: "#666",
+            color: "var(--color-text-secondary)",
         },
-        link: { color: "#000", fontWeight: 700, textDecoration: "none" }
+        link: { color: "var(--color-accent)", fontWeight: 700, textDecoration: "none" }
     },
     desktop: {
         card: { padding: "3rem" },

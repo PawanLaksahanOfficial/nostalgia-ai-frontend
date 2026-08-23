@@ -6,10 +6,12 @@ import { TextArea } from "../components/common/TextArea";
 import { Button } from "../components/common/Button";
 import { VideoPreview } from "../components/VedioPreview";
 import { useComponentStyle } from "../hooks/useComponentStyle";
+import { useToast } from "../hooks/useToast";
 import { generate } from "../services/homeServices";
 
 export const HomePage: React.FC = () => {
   const Styles = useComponentStyle("homePage");
+  const toast = useToast();
   const [text, setText] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
@@ -24,7 +26,7 @@ const handleGenerate = async () => {
       setVideoUrl(response);
     } catch (error) {
       console.error(error);
-      alert("Error generating video. Please try again.");
+      toast.error("Error generating video. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -34,7 +36,7 @@ const handleGenerate = async () => {
    <div style={Styles.wrapper}>
       <Header />
       <main style={Styles.content}>
-        <div style={Styles.card}>
+        <div style={Styles.card} className="card animate-fade-in-up">
           <h1 style={Styles.title}>Create Your Nostalgic Memory Video</h1>
           <p style={Styles.subtext}>
             Describe your memory and optionally upload an image.  
