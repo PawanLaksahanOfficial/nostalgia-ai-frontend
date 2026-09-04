@@ -362,7 +362,10 @@ export const ProfilePage: React.FC = () => {
           </div>
 
           <div style={Styles.section}>
-            <h2 style={Styles.sectionTitle}>My Memories</h2>
+            <div style={Styles.sectionTitleRow}>
+              <h2 style={Styles.sectionTitle}>My Memories</h2>
+              <Button label="Manage in My Videos" type="button" variant="outline" disabled={false} onClick={() => navigate('/videos')} />
+            </div>
             {memories.length === 0 ? (
               <p style={Styles.emptyState}>No memories created yet.</p>
             ) : (
@@ -382,9 +385,6 @@ export const ProfilePage: React.FC = () => {
                         {memory.status}
                       </span>
                     </div>
-                    {memory.hasVideo && (
-                      <Button label="Download" type="button" variant="outline" disabled={false} />
-                    )}
                   </div>
                 ))}
               </div>

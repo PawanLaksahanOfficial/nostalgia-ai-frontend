@@ -34,6 +34,12 @@ export const profile = {
       color: "var(--color-text-primary)",
       marginBottom: "1rem",
     },
+    sectionTitleRow: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+      marginBottom: "1rem",
+    },
     form: {
       display: "flex",
       flexDirection: "column",
@@ -192,6 +198,11 @@ export const profile = {
     },
     buttonGroup: {
       flexDirection: "row",
+    },
+    sectionTitleRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
     },
     memoryItem: {
       flexDirection: "row",

@@ -65,3 +65,8 @@ export const extractApiMessage = (error: unknown, fallback: string): string => {
     }
     return fallback;
 };
+
+// Shared-link endpoints are public: no auth header, no 401 logout handling.
+export const publicApiClient = axios.create({
+    baseURL: import.meta.env.VITE_API_BASE_URL,
+});

@@ -31,6 +31,7 @@ export const Header: React.FC = () => {
         {isAuthenticated ? (
           <div style={Styles.userSection}>
             <span style={Styles.userName}>{user?.firstName || 'User'}</span>
+            <button className="link" style={Styles.myVideosLink} onClick={() => navigate('/videos')}>My Videos</button>
             <div className="icon-btn" style={Styles.profileCircle} onClick={() => navigate('/profile')}></div>
             <button className="btn btn-secondary" style={Styles.signOut} onClick={handleSignOut}>Sign Out</button>
           </div>

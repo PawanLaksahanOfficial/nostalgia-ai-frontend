@@ -12,6 +12,11 @@ import { errorPage } from "./errorPage";
 import { button } from "./button";
 import { themeToggle } from "./themeToggle";
 import { toastContainer } from "./toastContainer";
+import { videosPage } from "./videosPage";
+import { watchPage } from "./watchPage";
+import { modal } from "./modal";
+import { shareModal } from "./shareModal";
+import { videoCard } from "./videoCard";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -35,3 +40,8 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("button", button)
     styleDictionary.set("themeToggle", themeToggle)
     styleDictionary.set("toastContainer", toastContainer)
+    styleDictionary.set("videosPage", videosPage)
+    styleDictionary.set("watchPage", watchPage)
+    styleDictionary.set("modal", modal)
+    styleDictionary.set("shareModal", shareModal)
+    styleDictionary.set("videoCard", videoCard)
