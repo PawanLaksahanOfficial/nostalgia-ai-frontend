@@ -10,6 +10,7 @@ interface Props {
 
 export const ErrorIndicator: React.FC<Props> = (props) => {
     const [showMessage, setShowMessage] = useState<boolean>(false);
+    const styles = props.styles ?? {};
 
     const showErrorMessage = () => {
         setShowMessage(!showMessage);
@@ -17,8 +18,8 @@ export const ErrorIndicator: React.FC<Props> = (props) => {
 
     return(
         <div>
-            <ErrorIcon style={props.styles.errorIcon} onClick={showErrorMessage}/>
-            {showMessage && <PopUp message={props.message} styles={props.styles.popUp}/>}
+            <ErrorIcon style={styles.errorIcon} onClick={showErrorMessage}/>
+            {showMessage && <PopUp message={props.message} styles={styles.popUp}/>}
         </div>
     )
 }
