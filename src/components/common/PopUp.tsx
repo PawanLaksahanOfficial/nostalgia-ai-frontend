@@ -6,7 +6,7 @@ interface Props {
 
 export const PopUp: React.FC<Props> = (props) => {
 
-    const styles = props.styles;
+    const styles = props.styles ?? {};
 
     return (
         <div style={styles.wrapper}>

@@ -18,6 +18,7 @@ export const InputField: React.FC<InputProps> = ({type = "text", label, accept, 
   const [passwordVisible, setPasswordVisible] = useState<boolean>(false);
   const Styles = useComponentStyle("inputField");
   const isPasswordField = type === "password";
+  const { hidden: eyeHiddenStyle, ...eyeStyle } = Styles.passwordEye ?? {};
 
   const ToggleVisibility = () => {
       setPasswordVisible(!passwordVisible);
@@ -33,8 +34,8 @@ export const InputField: React.FC<InputProps> = ({type = "text", label, accept, 
         value={value}
         onChange={onChange}
         className="input"
-        style={Styles.input} />
-        {(isPasswordField && value) && <PasswordEye style={{...Styles.passwordEye, ...(!passwordVisible && Styles.passwordEye.hidden)}} onClick={ToggleVisibility}/>}
+        style={{...Styles.input, ...(isPasswordField ? Styles.passwordInput : {})}} />
+        {(isPasswordField && value) && <PasswordEye style={{...eyeStyle, ...(!passwordVisible ? eyeHiddenStyle : {})}} onClick={ToggleVisibility}/>}
         {validation?.invalid && <ErrorIndicator message={validation?.message} styles={Styles.errorIndicator}/>}
     </div>
   );
