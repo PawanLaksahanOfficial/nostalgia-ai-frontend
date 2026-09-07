@@ -4,6 +4,7 @@ import { PopUp } from "./PopUp";
 
 interface Props {
     message?: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     styles: any
 }
 
@@ -17,7 +18,7 @@ export const ErrorIndicator: React.FC<Props> = (props) => {
     return(
         <div>
             <ErrorIcon style={props.styles.errorIcon} onClick={showErrorMessage}/>
-            {showMessage && <PopUp styles={props.styles.popUp}/>}
+            {showMessage && <PopUp message={props.message} styles={props.styles.popUp}/>}
         </div>
     )
 }

@@ -3,12 +3,15 @@ import './App.css'
 import { useDispatch, useSelector } from 'react-redux'
 import { useMediaQuery } from 'react-responsive'
 import { setMobile } from './redux/styleSlice'
-import { useRoutes } from 'react-router-dom'
+import { Navigate, useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { ProfilePage } from './pages/ProfilePage'
+import { PricingPage } from './pages/PricingPage'
 import type { RootState } from './redux/store'
 import { Login } from './components/userAuthenticate/Login'
 import { Register } from './components/userAuthenticate/Register'
+import { ForgotPassword } from './components/userAuthenticate/ForgotPassword'
+import { ResetPassword } from './components/userAuthenticate/ResetPassword'
 import { useTheme } from './hooks/useTheme'
 import { ToastContainer } from './components/common/ToastContainer'
 
@@ -21,9 +24,13 @@ function App() {
   const AppRoutes = () => {
     const routes = useRoutes([
       { path: "/", element: <HomePage /> },
-      { path: "/signIn", element: <Login /> },
-      { path: "/register", element: <Register />},
-      { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Login /> },
+      { path: "/pricing", element: <PricingPage /> },
+      { path: "/signIn", element: isAuthenticated ? <Navigate to="/" replace /> : <Login /> },
+      { path: "/register", element: isAuthenticated ? <Navigate to="/" replace /> : <Register /> },
+      { path: "/forgot-password", element: <ForgotPassword /> },
+      { path: "/reset-password", element: <ResetPassword /> },
+      { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Navigate to="/signIn" replace /> },
+      { path: "*", element: <Navigate to="/" replace /> },
     ])
     return routes;
   }
