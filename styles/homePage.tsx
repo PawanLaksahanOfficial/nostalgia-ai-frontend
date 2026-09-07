@@ -50,28 +50,46 @@ export const homePage = {
       color: "var(--color-danger, #dc2626)",
       fontWeight: 600,
     },
-    result: {
-      marginTop: "1.2rem",
-      backgroundColor: "var(--color-bg-card)",
-      borderRadius: "20px",
-      padding: "1.5rem",
+    fieldGroup: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.4rem",
+    },
+    fieldLabel: {
+      fontSize: "0.85rem",
+      fontWeight: 500,
+      color: "var(--color-text-secondary)",
+    },
+    select: {
+      width: "100%",
+      padding: "0.7rem 0.9rem",
+      borderRadius: "10px",
       border: "1px solid var(--color-border)",
-      boxShadow: "var(--shadow-card)",
+      backgroundColor: "var(--color-bg-input)",
+      color: "var(--color-text-primary)",
+      fontSize: "0.9rem",
+    },
+    errorText: {
+      fontSize: "0.9rem",
+      color: "var(--color-danger)",
+      textAlign: "center",
+    },
+    progressWrap: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "1rem",
+      padding: "2rem 0",
+    },
+    stepText: {
+      fontSize: "0.95rem",
+      color: "var(--color-text-secondary)",
+      textAlign: "center",
+    },
+    resultActions: {
       display: "flex",
       flexDirection: "column",
       gap: "0.75rem",
-    },
-    resultTitle: {
-      fontSize: "1.1rem",
-      fontWeight: 700,
-      fontFamily: "var(--font-heading)",
-      color: "var(--color-text-primary)",
-    },
-    resultText: {
-      fontSize: "0.95rem",
-      lineHeight: 1.7,
-      whiteSpace: "pre-wrap",
-      color: "var(--color-text-secondary)",
     },
   },
 
@@ -115,18 +133,9 @@ export const homePage = {
       flexDirection: "column",
       gap: "1.2rem",
     },
-    result: {
-      width: "60%",
-      maxWidth: "700px",
-      borderRadius: "24px",
-      padding: "2.5rem",
-      marginTop: "1.5rem",
-    },
-    resultTitle: {
-      fontSize: "1.3rem",
-    },
-    resultText: {
-      fontSize: "1.05rem",
+    resultActions: {
+      flexDirection: "row",
+      flexWrap: "wrap",
     },
   },
 };

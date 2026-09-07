@@ -1,0 +1,60 @@
+export const modal = {
+  mobile: {
+    overlay: {
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "var(--overlay-glass-tint)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "1rem",
+      zIndex: 2000,
+    },
+    panel: {
+      backgroundColor: "var(--color-bg-card)",
+      borderRadius: "16px",
+      border: "1px solid var(--color-border)",
+      boxShadow: "var(--shadow-modal)",
+      width: "100%",
+      maxWidth: "480px",
+      maxHeight: "85vh",
+      overflowY: "auto",
+      padding: "1.5rem",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "1rem",
+    },
+    title: {
+      fontSize: "1.2rem",
+      fontWeight: 700,
+      fontFamily: "var(--font-heading)",
+      color: "var(--color-text-primary)",
+      margin: 0,
+    },
+    closeButton: {
+      background: "transparent",
+      border: "none",
+      color: "var(--color-text-secondary)",
+      fontSize: "1.1rem",
+      lineHeight: 1,
+      padding: "0.4rem",
+      borderRadius: "8px",
+    },
+    body: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "1rem",
+    },
+  },
+  desktop: {
+    panel: {
+      padding: "2rem",
+    },
+  },
+};

@@ -51,6 +51,15 @@ export const header = {
       fontSize: "0.9rem",
       fontWeight: 500,
     },
+    myVideosLink: {
+      background: "transparent",
+      border: "none",
+      padding: "0.4rem 0.2rem",
+      cursor: "pointer",
+      color: "var(--color-text-primary)",
+      fontSize: "0.9rem",
+      fontWeight: 500,
+    },
     signOut: {
       background: "transparent",
       border: "1px solid var(--color-border-strong)",

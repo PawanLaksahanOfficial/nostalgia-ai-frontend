@@ -7,6 +7,8 @@ import { Navigate, useRoutes } from 'react-router-dom'
 import { HomePage } from './pages/HomePage'
 import { ProfilePage } from './pages/ProfilePage'
 import { PricingPage } from './pages/PricingPage'
+import { VideosPage } from './pages/VideosPage'
+import { WatchPage } from './pages/WatchPage'
 import type { RootState } from './redux/store'
 import { Login } from './components/userAuthenticate/Login'
 import { Register } from './components/userAuthenticate/Register'
@@ -30,6 +32,8 @@ function App() {
       { path: "/forgot-password", element: <ForgotPassword /> },
       { path: "/reset-password", element: <ResetPassword /> },
       { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Navigate to="/signIn" replace /> },
+      { path: "/videos", element: isAuthenticated ? <VideosPage /> : <Navigate to="/signIn" replace /> },
+      { path: "/s/:token", element: <WatchPage /> },
       { path: "*", element: <Navigate to="/" replace /> },
     ])
     return routes;

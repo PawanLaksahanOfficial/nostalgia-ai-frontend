@@ -1,5 +1,6 @@
 import type { AxiosResponse } from "axios";
 import { apiClient, extractApiMessage } from "./apiClient";
+import type { VideoStatus } from "./videoServices";
 
 export interface UserSummary {
     userId: number;
@@ -36,7 +37,7 @@ export interface ProfileData {
 export interface MemoryItem {
     id: number;
     title: string;
-    status: string;
+    status: VideoStatus;
     createdAt: string;
     completedAt: string | null;
     hasVideo: boolean;

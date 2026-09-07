@@ -1,0 +1,127 @@
+export const videoCard = {
+  mobile: {
+    card: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+      padding: "1rem",
+      backgroundColor: "var(--color-bg-card-alt)",
+      borderRadius: "12px",
+    },
+    mainRow: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+    },
+    info: {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.4rem",
+    },
+    editRow: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.6rem",
+    },
+    editButtons: {
+      display: "flex",
+      gap: "0.5rem",
+    },
+    title: {
+      fontSize: "1.05rem",
+      fontWeight: 600,
+      color: "var(--color-text-primary)",
+      margin: 0,
+    },
+    metaRow: {
+      display: "flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      gap: "0.5rem",
+    },
+    metaText: {
+      fontSize: "0.85rem",
+      color: "var(--color-text-secondary)",
+    },
+    statusCompleted: {
+      display: "inline-block",
+      padding: "0.2rem 0.65rem",
+      borderRadius: "9999px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+      color: "#ffffff",
+      backgroundColor: "var(--color-success)",
+    },
+    statusProcessing: {
+      display: "inline-block",
+      padding: "0.2rem 0.65rem",
+      borderRadius: "9999px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+      color: "#ffffff",
+      backgroundColor: "var(--color-warning)",
+    },
+    statusFailed: {
+      display: "inline-block",
+      padding: "0.2rem 0.65rem",
+      borderRadius: "9999px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+      color: "#ffffff",
+      backgroundColor: "var(--color-danger)",
+    },
+    statusPending: {
+      display: "inline-block",
+      padding: "0.2rem 0.65rem",
+      borderRadius: "9999px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+      color: "#ffffff",
+      backgroundColor: "var(--color-text-muted)",
+    },
+    publicBadge: {
+      display: "inline-block",
+      padding: "0.2rem 0.65rem",
+      borderRadius: "9999px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+      color: "var(--color-text-primary)",
+      backgroundColor: "var(--color-highlight-soft)",
+    },
+    stepText: {
+      fontSize: "0.85rem",
+      color: "var(--color-text-secondary)",
+      fontStyle: "italic",
+      margin: 0,
+    },
+    errorText: {
+      fontSize: "0.85rem",
+      color: "var(--color-danger)",
+      margin: 0,
+    },
+    actions: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "0.5rem",
+    },
+    confirmText: {
+      color: "var(--color-text-primary)",
+      margin: 0,
+    },
+    confirmButtons: {
+      display: "flex",
+      gap: "0.75rem",
+    },
+  },
+  desktop: {
+    mainRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+    },
+    actions: {
+      flexWrap: "nowrap",
+    },
+  },
+};
