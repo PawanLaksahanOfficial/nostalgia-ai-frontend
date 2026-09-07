@@ -1,5 +1,6 @@
 interface Props {
     message?: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     styles: any
 }
 

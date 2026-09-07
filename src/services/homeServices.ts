@@ -1,72 +1,49 @@
-import { apiClient } from "./apiClient";
+import type { AxiosResponse } from "axios";
+import { apiClient, extractApiMessage } from "./apiClient";
 
-export const generate = async (text: string, image?: File | null) => {
+export interface MemoryStatus {
+    id: number;
+    title: string;
+    status: string;
+    generatedNarrative: string | null;
+    videoUrl: string | null;
+    createdAt: string;
+    completedAt: string | null;
+}
+
+const unwrap = async <T>(call: Promise<AxiosResponse>, fallback: string): Promise<T> => {
     try {
-        const formData = new FormData();
-        formData.append("Text", text);
-        if (image) formData.append("Image", image);
-
-        const response = await apiClient.post(
-            "/api/memories/generate",
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data"
-                }
-            }
-        );
-        const apiResponse = response.data;
+        const apiResponse = (await call).data;
         if (!apiResponse.success) {
-            throw new Error(apiResponse.message || "Generation failed.");
+            throw new Error(apiResponse.message || fallback);
         }
-        return apiResponse.data;
+        return apiResponse.data as T;
     } catch (error) {
-        console.error("Error generating nostalgia:", error);
-        return null;
+        throw new Error(extractApiMessage(error, fallback));
     }
 };
 
-export const createMemoryVideo = async (title: string, storyText: string, musicMood?: string) => {
-    try {
-        const response = await apiClient.post(
-            "/api/memories/create",
-            { title, storyText, musicMood }
-        );
-        const apiResponse = response.data;
-        if (!apiResponse.success) {
-            throw new Error(apiResponse.message || "Failed to create memory.");
-        }
-        return apiResponse.data;
-    } catch (error) {
-        console.error("Error creating memory video:", error);
-        throw error;
-    }
-};
+export const generate = (text: string): Promise<string> =>
+    unwrap<string>(
+        apiClient.post("/api/memories/generate", { text }),
+        "Could not generate your memory."
+    );
 
-export const getMemoryStatus = async (jobId: number) => {
-    try {
-        const response = await apiClient.get(`/api/memories/status/${jobId}`);
-        const apiResponse = response.data;
-        if (!apiResponse.success) {
-            throw new Error(apiResponse.message || "Failed to get memory status.");
-        }
-        return apiResponse.data;
-    } catch (error) {
-        console.error("Error getting memory status:", error);
-        return null;
-    }
-};
+export const createMemoryVideo = (
+    title: string,
+    storyText: string,
+    musicMood?: string
+): Promise<{ jobId: number; status: string }> =>
+    unwrap(
+        apiClient.post("/api/memories/create", { title, storyText, musicMood }),
+        "Failed to queue your memory."
+    );
 
-export const getMyMemories = async () => {
-    try {
-        const response = await apiClient.get("/api/memories/my");
-        const apiResponse = response.data;
-        if (!apiResponse.success) {
-            throw new Error(apiResponse.message || "Failed to fetch memories.");
-        }
-        return apiResponse.data;
-    } catch (error) {
-        console.error("Error fetching memories:", error);
-        return [];
-    }
-};
+export const getMemoryStatus = (jobId: number): Promise<MemoryStatus> =>
+    unwrap<MemoryStatus>(
+        apiClient.get(`/api/memories/status/${jobId}`),
+        "Failed to get memory status."
+    );
+
+export const getMyMemories = (): Promise<unknown[]> =>
+    unwrap<unknown[]>(apiClient.get("/api/memories/my"), "Failed to fetch memories.");

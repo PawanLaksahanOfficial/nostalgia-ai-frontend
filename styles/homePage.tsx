@@ -40,6 +40,39 @@ export const homePage = {
       flexDirection: "column",
       gap: "1rem",
     },
+    charCount: {
+      fontSize: "0.75rem",
+      textAlign: "right",
+      color: "var(--color-text-secondary)",
+      marginTop: "-0.6rem",
+    },
+    charCountOver: {
+      color: "var(--color-danger, #dc2626)",
+      fontWeight: 600,
+    },
+    result: {
+      marginTop: "1.2rem",
+      backgroundColor: "var(--color-bg-card)",
+      borderRadius: "20px",
+      padding: "1.5rem",
+      border: "1px solid var(--color-border)",
+      boxShadow: "var(--shadow-card)",
+      display: "flex",
+      flexDirection: "column",
+      gap: "0.75rem",
+    },
+    resultTitle: {
+      fontSize: "1.1rem",
+      fontWeight: 700,
+      fontFamily: "var(--font-heading)",
+      color: "var(--color-text-primary)",
+    },
+    resultText: {
+      fontSize: "0.95rem",
+      lineHeight: 1.7,
+      whiteSpace: "pre-wrap",
+      color: "var(--color-text-secondary)",
+    },
   },
 
   desktop: {
@@ -81,6 +114,19 @@ export const homePage = {
       display: "flex",
       flexDirection: "column",
       gap: "1.2rem",
+    },
+    result: {
+      width: "60%",
+      maxWidth: "700px",
+      borderRadius: "24px",
+      padding: "2.5rem",
+      marginTop: "1.5rem",
+    },
+    resultTitle: {
+      fontSize: "1.3rem",
+    },
+    resultText: {
+      fontSize: "1.05rem",
     },
   },
 };

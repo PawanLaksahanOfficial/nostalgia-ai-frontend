@@ -1,67 +1,79 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
-import { InputField } from "../components/common/InputField";
 import { TextArea } from "../components/common/TextArea";
 import { Button } from "../components/common/Button";
-import { VideoPreview } from "../components/VedioPreview";
 import { useComponentStyle } from "../hooks/useComponentStyle";
 import { useToast } from "../hooks/useToast";
 import { generate } from "../services/homeServices";
+import type { RootState } from "../redux/store";
+
+const MAX_MEMORY_LENGTH = 2000;
 
 export const HomePage: React.FC = () => {
   const Styles = useComponentStyle("homePage");
   const toast = useToast();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [text, setText] = useState("");
-  const [image, setImage] = useState<File | null>(null);
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [narrative, setNarrative] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const isOverLimit = text.length > MAX_MEMORY_LENGTH;
+  const handleGenerate = async () => {
+    if (!isAuthenticated) {
+      navigate("/signIn");
+      return;
+    }
 
-const handleGenerate = async () => {
-  setLoading(true);
-
+    setLoading(true);
+    setNarrative(null);
     try {
-      const response = await generate(text, image)
-      if (!response) throw new Error("Failed to generate video");
-      setVideoUrl(response);
+      setNarrative(await generate(text));
     } catch (error) {
-      console.error(error);
-      toast.error("Error generating video. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Error generating your memory.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-   <div style={Styles.wrapper}>
+    <div style={Styles.wrapper}>
       <Header />
       <main style={Styles.content}>
         <div style={Styles.card} className="card animate-fade-in-up">
-          <h1 style={Styles.title}>Create Your Nostalgic Memory Video</h1>
+          <h1 style={Styles.title}>Create Your Nostalgic Memory</h1>
           <p style={Styles.subtext}>
-            Describe your memory and optionally upload an image.  
-            We'll turn it into a beautiful nostalgic video.
+            Describe a memory and we'll retell it as a nostalgic story.
           </p>
           <div style={Styles.form}>
             <TextArea
               label="Enter your nostalgic memory"
               value={text}
-              onChange={(e) => setText(e.target.value)}/>
-            <InputField
-              type="file"
-              label="Upload an optional image"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files?.[0] || null)}/>
+              onChange={(e) => setText(e.target.value)} />
+            <div style={{
+              ...Styles.charCount,
+              ...(isOverLimit ? Styles.charCountOver : {}),
+            }}>
+              {text.length} / {MAX_MEMORY_LENGTH}
+            </div>
             <Button
-              label={loading ? "Generating..." : "Generate Video"}
+              label={loading ? "Generating..." : "Generate Memory"}
               type="button"
               variant="primary"
-              disabled={loading || !text.trim()}
+              disabled={loading || !text.trim() || isOverLimit}
               loading={loading}
-              onClick={handleGenerate}/>
+              onClick={handleGenerate} />
           </div>
         </div>
-        {videoUrl && <VideoPreview src={videoUrl} />}
+
+        {narrative && (
+          <div style={Styles.result} className="card animate-fade-in-up">
+            <h2 style={Styles.resultTitle}>Your nostalgic story</h2>
+            <p style={Styles.resultText}>{narrative}</p>
+          </div>
+        )}
       </main>
       <Footer />
     </div>

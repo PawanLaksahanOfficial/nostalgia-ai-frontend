@@ -53,6 +53,14 @@ export const login = {
             color: "var(--color-danger)",
             border: "1px solid var(--color-danger)",
         },
+        successAlert: {
+            padding: "0.75rem",
+            marginBottom: "1rem",
+            borderRadius: "8px",
+            backgroundColor: "var(--color-success-soft, rgba(22, 163, 74, 0.12))",
+            color: "var(--color-success, #16a34a)",
+            border: "1px solid var(--color-success, #16a34a)",
+        },
         inputSection: {
             display: "flex",
             flexDirection: "column",

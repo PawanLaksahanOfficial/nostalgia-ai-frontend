@@ -1,6 +1,6 @@
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import MetaIcon from "../../assets/svg/meta_icon.svg?react";
-import { postSocialToken, getProfile } from "../../services/userServices";
+import { postSocialToken } from "../../services/userServices";
 import { useLogin } from 'react-facebook';
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,26 +23,12 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
     const navigate = useNavigate();
     const { theme } = useSelector((state: RootState) => state.style);
 
-    // Generic handler to manage the "Backend Round-trip"
     const handleSocialAuth = async (token: string, provider: 'google' | 'meta') => {
         setIsProcessing(true);
         setError("");
         try {
             const result = await postSocialToken(token, provider);
-            const profile = await getProfile();
-            dispatch(setCredentials({
-                token: result.token,
-                user: {
-                    userId: profile.userId,
-                    firstName: profile.firstName,
-                    lastName: profile.lastName,
-                    email: profile.email,
-                    avatarUrl: profile.avatarUrl,
-                    tier: profile.tier,
-                    monthlyMemoriesUsed: profile.quota.monthlyMemoriesUsed,
-                    monthlyMemoriesLimit: profile.quota.monthlyMemoriesLimit,
-                }
-            }));
+            dispatch(setCredentials({ token: result.token, user: result.user }));
             if (onSuccess) {
                 onSuccess(result);
             }
@@ -59,6 +45,10 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
         if (response.credential) {
             handleSocialAuth(response.credential, 'google');
         }
+    };
+
+    const handleGoogleError = () => {
+        setError("Google sign-in was cancelled or failed. Please try again.");
     };
 
     const handleMetaLogin = async () => {
@@ -82,6 +72,7 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
             <div style={{ ...styles.googleWrapper, opacity: isProcessing ? 0.6 : 1, pointerEvents: isProcessing ? 'none' : 'auto' }}>
                 <GoogleLogin
                     onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
                     useOneTap
                     theme={theme === "dark" ? "filled_black" : "filled_blue"}
                     shape="pill"

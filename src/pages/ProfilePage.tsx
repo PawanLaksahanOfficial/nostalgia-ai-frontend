@@ -1,19 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useComponentStyle } from "../hooks/useComponentStyle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { RootState } from "../redux/store";
 import { logout } from "../redux/authSlice";
-import { getProfile, updateProfile, changePassword, getMyMemories, createCheckoutSession } from "../services/userServices";
-import type { ProfileData, MemoryItem } from "../services/userServices";
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+  getMyMemories,
+  getSubscriptionStatus,
+  cancelSubscription,
+  resumeSubscription,
+  createPortalSession,
+} from "../services/userServices";
+import type { ProfileData, MemoryItem, SubscriptionStatus } from "../services/userServices";
 import { ErrorPage } from "../components/common/ErrorPage";
 import { Header } from "../components/common/Header";
 import { InputField } from "../components/common/InputField";
 import { Button } from "../components/common/Button";
 import { useToast } from "../hooks/useToast";
+import { validatePassword, validateConfirmPassword } from "../components/common/validate/ValidateInputs";
 
 const initialProfileForm = { firstName: "", lastName: "" };
-const initialPasswordForm = { currentPassword: "", newPassword: "" };
+const initialPasswordForm = { currentPassword: "", newPassword: "", confirmNewPassword: "" };
+
+const messageFrom = (error: unknown, fallback: string) =>
+  error instanceof Error && error.message ? error.message : fallback;
 
 export const ProfilePage: React.FC = () => {
   const Styles = useComponentStyle("profile");
@@ -21,14 +34,40 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [memories, setMemories] = useState<MemoryItem[]>([]);
+  const [subscription, setSubscription] = useState<SubscriptionStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [profileForm, setProfileForm] = useState(initialProfileForm);
   const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [billingPending, setBillingPending] = useState(false);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    setPageError(null);
+    try {
+      const [profileData, memoriesData, subscriptionData] = await Promise.all([
+        getProfile(),
+        getMyMemories(),
+        getSubscriptionStatus(),
+      ]);
+      setProfile(profileData);
+      setMemories(memoriesData);
+      setSubscription(subscriptionData);
+      setProfileForm({
+        firstName: profileData.firstName,
+        lastName: profileData.lastName
+      });
+    } catch (error) {
+      setPageError(messageFrom(error, "Failed to load profile."));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -36,28 +75,20 @@ export const ProfilePage: React.FC = () => {
       return;
     }
     loadData();
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, loadData]);
 
-  const loadData = async () => {
-    setLoading(true);
-    setPageError(null);
-    try {
-      const [profileData, memoriesData] = await Promise.all([
-        getProfile(),
-        getMyMemories()
-      ]);
-      setProfile(profileData);
-      setMemories(memoriesData);
-      setProfileForm({
-        firstName: profileData.firstName,
-        lastName: profileData.lastName
-      });
-    } catch (error: any) {
-      setPageError(error.message || "Failed to load profile.");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+    if (!checkout) return;
+
+    if (checkout === "success") {
+      toast.success("Payment received. Your Premium access will appear here shortly.");
+    } else if (checkout === "cancel") {
+      toast.error("Checkout was cancelled. You have not been charged.");
     }
-  };
+    searchParams.delete("checkout");
+    setSearchParams(searchParams, { replace: true });
+  }, [searchParams, setSearchParams, toast]);
 
   const handleUpdateProfile = async () => {
     try {
@@ -67,14 +98,25 @@ export const ProfilePage: React.FC = () => {
       });
       setEditing(false);
       await loadData();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update profile.");
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to update profile."));
     }
   };
 
+  const newPasswordCheck = validatePassword(passwordForm.newPassword);
+  const confirmPasswordCheck = validateConfirmPassword(
+    passwordForm.confirmNewPassword,
+    passwordForm.newPassword
+  );
+  const canChangePassword =
+    !!passwordForm.currentPassword &&
+    newPasswordCheck.valid === true &&
+    confirmPasswordCheck.valid === true &&
+    !changingPassword;
+
   const handleChangePassword = async () => {
-    if (!passwordForm.currentPassword || !passwordForm.newPassword) {
-      toast.error("Please fill in both password fields.");
+    if (!canChangePassword) {
+      toast.error("Please complete all password fields correctly.");
       return;
     }
     setChangingPassword(true);
@@ -85,8 +127,8 @@ export const ProfilePage: React.FC = () => {
       });
       setPasswordForm(initialPasswordForm);
       toast.success("Password changed successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to change password.");
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to change password."));
     } finally {
       setChangingPassword(false);
     }
@@ -97,15 +139,40 @@ export const ProfilePage: React.FC = () => {
     navigate("/");
   };
 
-  const handleUpgrade = async () => {
+  const handleCancelSubscription = async () => {
+    setBillingPending(true);
     try {
-      const priceId = "price_1Tuo7TCljtrS1H5Ci8449rkm";
-      const successUrl = `${window.location.origin}/profile?checkout=success`;
-      const cancelUrl = `${window.location.origin}/profile?checkout=cancel`;
-      const { sessionUrl } = await createCheckoutSession(priceId, successUrl, cancelUrl);
-      window.location.href = sessionUrl;
-    } catch (error: any) {
-      toast.error(error.message || "Failed to start checkout.");
+      await cancelSubscription();
+      toast.success("Your subscription will not renew after the current period.");
+      await loadData();
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to cancel the subscription."));
+    } finally {
+      setBillingPending(false);
+    }
+  };
+
+  const handleResumeSubscription = async () => {
+    setBillingPending(true);
+    try {
+      await resumeSubscription();
+      toast.success("Your subscription will renew as normal.");
+      await loadData();
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to resume the subscription."));
+    } finally {
+      setBillingPending(false);
+    }
+  };
+
+  const handleManageBilling = async () => {
+    setBillingPending(true);
+    try {
+      const { portalUrl } = await createPortalSession(`${window.location.origin}/profile`);
+      window.location.href = portalUrl;
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to open the billing portal."));
+      setBillingPending(false);
     }
   };
 
@@ -134,9 +201,13 @@ export const ProfilePage: React.FC = () => {
     );
   }
 
-  const usagePercentage = profile.quota
-    ? Math.round((profile.quota.monthlyMemoriesUsed / profile.quota.monthlyMemoriesLimit) * 100)
+  const usagePercentage = profile.quota && profile.quota.monthlyMemoriesLimit > 0
+    ? Math.min(100, Math.round((profile.quota.monthlyMemoriesUsed / profile.quota.monthlyMemoriesLimit) * 100))
     : 0;
+
+  const renewalDate = subscription?.currentPeriodEnd
+    ? new Date(subscription.currentPeriodEnd).toLocaleDateString()
+    : null;
 
   return (
     <div style={Styles.wrapper}>
@@ -198,9 +269,57 @@ export const ProfilePage: React.FC = () => {
                 {profile.quota.hasWatermark && (
                   <p style={Styles.watermarkNote}>Videos will include a "Made with Nostalgia AI" watermark</p>
                 )}
-                {profile.tier === 'free' && (
-                  <Button label="Upgrade to Premium" type="button" variant="primary" disabled={false} onClick={handleUpgrade} />
+
+                {subscription?.cancelAtPeriodEnd && renewalDate && (
+                  <div style={Styles.quotaItem}>
+                    <span style={Styles.quotaLabel}>Access ends:</span>
+                    <span style={Styles.quotaValue}>{renewalDate}</span>
+                  </div>
                 )}
+                {subscription && !subscription.cancelAtPeriodEnd && renewalDate && (
+                  <div style={Styles.quotaItem}>
+                    <span style={Styles.quotaLabel}>Renews:</span>
+                    <span style={Styles.quotaValue}>{renewalDate}</span>
+                  </div>
+                )}
+
+                <div style={Styles.buttonGroup}>
+                  {profile.tier === 'free' && (
+                    <Button
+                      label="See Plans"
+                      type="button"
+                      variant="primary"
+                      disabled={false}
+                      onClick={() => navigate("/pricing")} />
+                  )}
+                  {subscription?.hasActiveSubscription && (
+                    <>
+                      <Button
+                        label="Manage Billing"
+                        type="button"
+                        variant="secondary"
+                        disabled={billingPending}
+                        onClick={handleManageBilling} />
+                      {subscription.cancelAtPeriodEnd ? (
+                        <Button
+                          label="Resume Subscription"
+                          type="button"
+                          variant="primary"
+                          disabled={billingPending}
+                          loading={billingPending}
+                          onClick={handleResumeSubscription} />
+                      ) : (
+                        <Button
+                          label="Cancel Subscription"
+                          type="button"
+                          variant="dangerOutline"
+                          disabled={billingPending}
+                          loading={billingPending}
+                          onClick={handleCancelSubscription} />
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -220,13 +339,22 @@ export const ProfilePage: React.FC = () => {
                 name="newPassword"
                 type="password"
                 value={passwordForm.newPassword}
+                validation={passwordForm.newPassword ? newPasswordCheck : undefined}
                 onChange={(e) => setPasswordForm(prev => ({ ...prev, newPassword: e.target.value }))}
+              />
+              <InputField
+                label="Confirm New Password"
+                name="confirmNewPassword"
+                type="password"
+                value={passwordForm.confirmNewPassword}
+                validation={passwordForm.confirmNewPassword ? confirmPasswordCheck : undefined}
+                onChange={(e) => setPasswordForm(prev => ({ ...prev, confirmNewPassword: e.target.value }))}
               />
               <Button
                 label="Change Password"
                 type="button"
                 variant="primary"
-                disabled={changingPassword}
+                disabled={!canChangePassword}
                 loading={changingPassword}
                 onClick={handleChangePassword}
               />

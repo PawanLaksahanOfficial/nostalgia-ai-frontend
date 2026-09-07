@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { InputField } from "../common/InputField";
 import { Button } from "../common/Button";
 import { useComponentStyle } from "../../hooks/useComponentStyle";
@@ -16,6 +16,8 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const sessionExpired = searchParams.get("expired") === "1";
 
   const handleLogin = async () => {
     setError("");
@@ -40,6 +42,9 @@ export const Login: React.FC = () => {
             <h2 style={Styles.title}>Welcome Back</h2>
             <p style={Styles.subtitle}>Enter your details to access your account</p>
           </header>
+          {sessionExpired && !error && (
+            <div style={Styles.errorAlert}>Your session expired. Please sign in again.</div>
+          )}
           {error && (
             <div style={Styles.errorAlert}>{error}</div>
           )}
@@ -47,15 +52,17 @@ export const Login: React.FC = () => {
             <InputField
               label="Email Address"
               type="email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <div style={{ position: 'relative' }}>
               <InputField
                 label="Password"
                 type="password"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <a href="#forgot" style={Styles.forgotLink} className="link">Forgot password?</a>
+              <Link to="/forgot-password" style={Styles.forgotLink} className="link">Forgot password?</Link>
             </div>
             <Button
               label="Sign In"
@@ -72,7 +79,7 @@ export const Login: React.FC = () => {
           </div>
           <AuthenticationBySocialApps styles={Styles.socialContainer}/>
           <p style={Styles.signupText}>
-            Don't have an account? <a href="/register" style={Styles.link} className="link">Create one</a>
+            Don't have an account? <Link to="/register" style={Styles.link} className="link">Create one</Link>
           </p>
         </div>
       </main>
