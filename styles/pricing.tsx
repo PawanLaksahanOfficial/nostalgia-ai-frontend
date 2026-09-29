@@ -102,10 +102,8 @@ export const pricing = {
   },
 
   desktop: {
-    wrapper: {
-      padding: "2rem 4rem",
-    },
     content: {
+      padding: "2rem 4rem",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",

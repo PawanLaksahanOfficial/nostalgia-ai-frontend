@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import type { RootState } from "../redux/store";
 import { useComponentStyle } from "../hooks/useComponentStyle";
 import { Header } from "../components/common/Header";
+import { Footer } from "../components/common/Footer";
 import { ErrorPage } from "../components/common/ErrorPage";
 import { Button } from "../components/common/Button";
 import { VideoCard } from "../components/videos/VideoCard";
@@ -133,6 +134,7 @@ export const VideosPage: React.FC = () => {
           )}
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

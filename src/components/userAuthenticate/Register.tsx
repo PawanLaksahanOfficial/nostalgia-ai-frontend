@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthenticationBySocialApps } from "./AuthenticationBySocialApps"
+import { AuthBackLink, AuthBrand } from "./AuthBrand";
+import { hasSocialProviders } from "../helpers/socialAuth";
 import { useComponentStyle } from "../../hooks/useComponentStyle"
 import { InputField } from "../common/InputField";
 import { Button } from "../common/Button";
@@ -90,8 +92,10 @@ export const Register: React.FC = () => {
 
     return(
         <div style={Styles.wrapper}>
+            <AuthBackLink />
             <main style={Styles.content}>
                 <div style={Styles.card} className="card animate-fade-in-up">
+                    <AuthBrand />
                     <header>
                         <h2 style={Styles.title}>Create Account</h2>
                         <p style={Styles.subtitle}>Join Nostalgia AI and start creating memories</p>
@@ -149,11 +153,13 @@ export const Register: React.FC = () => {
                             onClick={handleRegister}
                         />
                     </div>
-                    <div style={Styles.dividerContainer}>
-                        <div style={Styles.dividerLine}></div>
-                        <span style={Styles.dividerText}>OR REGISTER WITH</span>
-                        <div style={Styles.dividerLine}></div>
-                    </div>
+                    {hasSocialProviders && (
+                        <div style={Styles.dividerContainer}>
+                            <div style={Styles.dividerLine}></div>
+                            <span style={Styles.dividerText}>OR REGISTER WITH</span>
+                            <div style={Styles.dividerLine}></div>
+                        </div>
+                    )}
                     <AuthenticationBySocialApps styles={Styles.socialContainer} />
                     <p style={Styles.loginText}>
                         Already have an account?{" "}

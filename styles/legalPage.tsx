@@ -1,4 +1,4 @@
-export const videosPage = {
+export const legalPage = {
   mobile: {
     wrapper: {
       display: "flex",
@@ -20,40 +20,40 @@ export const videosPage = {
       boxShadow: "var(--shadow-card)",
       padding: "1.5rem",
     },
-    titleRow: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "1rem",
-      marginBottom: "1.5rem",
-    },
     title: {
-      fontSize: "1.6rem",
+      margin: "0 0 0.4rem",
+      fontSize: "1.8rem",
       fontWeight: 800,
       fontFamily: "var(--font-heading)",
       color: "var(--color-text-primary)",
-      margin: 0,
+    },
+    updated: {
+      margin: "0 0 1.5rem",
+      fontSize: "0.85rem",
+      color: "var(--color-text-muted)",
+    },
+    heading: {
+      margin: "1.75rem 0 0.6rem",
+      fontSize: "1.1rem",
+      fontWeight: 600,
+      color: "var(--color-text-primary)",
+    },
+    paragraph: {
+      margin: "0 0 0.75rem",
+      fontSize: "0.95rem",
+      lineHeight: 1.7,
+      color: "var(--color-text-secondary)",
     },
     list: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "1rem",
-    },
-    emptyState: {
-      textAlign: "center",
-      padding: "3rem 1rem",
+      margin: "0 0 0.75rem",
+      paddingLeft: "1.25rem",
+      fontSize: "0.95rem",
+      lineHeight: 1.7,
       color: "var(--color-text-secondary)",
-      display: "flex",
-      flexDirection: "column",
-      gap: "1rem",
-      alignItems: "center",
     },
-    loading: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      fontSize: "1.125rem",
-      color: "var(--color-text-secondary)",
+    strong: {
+      color: "var(--color-text-primary)",
+      fontWeight: 600,
     },
   },
   desktop: {
@@ -62,15 +62,10 @@ export const videosPage = {
       maxWidth: "760px",
     },
     card: {
-      padding: "2rem",
+      padding: "2.5rem",
     },
     title: {
-      fontSize: "2rem",
-    },
-    titleRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
+      fontSize: "2.4rem",
     },
   },
 };

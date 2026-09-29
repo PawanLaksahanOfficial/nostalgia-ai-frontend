@@ -1,13 +1,17 @@
 export const profile = {
   mobile: {
     wrapper: {
+      display: "flex",
+      flexDirection: "column",
       minHeight: "100vh",
       backgroundColor: "var(--color-bg-page)",
-      padding: "1rem",
     },
     content: {
+      flex: 1,
+      width: "100%",
       maxWidth: "800px",
       margin: "0 auto",
+      padding: "1rem",
     },
     card: {
       backgroundColor: "var(--color-bg-card)",
@@ -22,6 +26,41 @@ export const profile = {
       fontFamily: "var(--font-heading)",
       color: "var(--color-text-primary)",
       marginBottom: "1.5rem",
+    },
+    avatarSection: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      textAlign: "center",
+      gap: "1rem",
+      marginBottom: "2rem",
+      paddingBottom: "1.5rem",
+      borderBottom: "1px solid var(--color-border)",
+    },
+    avatarDetails: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "0.3rem",
+    },
+    avatarName: {
+      margin: 0,
+      fontSize: "1.2rem",
+      fontWeight: 700,
+      fontFamily: "var(--font-heading)",
+      color: "var(--color-text-primary)",
+    },
+    avatarHint: {
+      margin: 0,
+      fontSize: "0.8rem",
+      color: "var(--color-text-muted)",
+    },
+    avatarActions: {
+      display: "flex",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      gap: "0.5rem",
+      marginTop: "0.5rem",
     },
     section: {
       marginBottom: "2rem",
@@ -180,10 +219,8 @@ export const profile = {
     },
   },
   desktop: {
-    wrapper: {
-      padding: "2rem",
-    },
     content: {
+      padding: "2rem 0",
       maxWidth: "760px",
       margin: "0 auto",
     },
@@ -192,6 +229,17 @@ export const profile = {
     },
     title: {
       fontSize: "2rem",
+    },
+    avatarSection: {
+      flexDirection: "row",
+      textAlign: "left",
+      gap: "1.5rem",
+    },
+    avatarDetails: {
+      alignItems: "flex-start",
+    },
+    avatarActions: {
+      justifyContent: "flex-start",
     },
     fieldRow: {
       flexDirection: "row",

@@ -5,6 +5,8 @@ import { InputField } from "../common/InputField";
 import { Button } from "../common/Button";
 import { useComponentStyle } from "../../hooks/useComponentStyle";
 import { AuthenticationBySocialApps } from "./AuthenticationBySocialApps";
+import { AuthBackLink, AuthBrand } from "./AuthBrand";
+import { hasSocialProviders } from "../helpers/socialAuth";
 import { setCredentials } from "../../redux/authSlice";
 import { login } from "../../services/userServices";
 
@@ -36,8 +38,10 @@ export const Login: React.FC = () => {
 
   return (
     <div style={Styles.wrapper}>
+      <AuthBackLink />
       <main style={Styles.content}>
         <div style={Styles.card} className="card animate-fade-in-up">
+          <AuthBrand />
           <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={Styles.title}>Welcome Back</h2>
             <p style={Styles.subtitle}>Enter your details to access your account</p>
@@ -72,11 +76,13 @@ export const Login: React.FC = () => {
               loading={loading}
             />
           </form>
-          <div style={Styles.dividerContainer}>
-            <div style={Styles.dividerLine}></div>
-            <span style={Styles.dividerText}>OR CONTINUE WITH</span>
-            <div style={Styles.dividerLine}></div>
-          </div>
+          {hasSocialProviders && (
+            <div style={Styles.dividerContainer}>
+              <div style={Styles.dividerLine}></div>
+              <span style={Styles.dividerText}>OR CONTINUE WITH</span>
+              <div style={Styles.dividerLine}></div>
+            </div>
+          )}
           <AuthenticationBySocialApps styles={Styles.socialContainer}/>
           <p style={Styles.signupText}>
             Don't have an account? <Link to="/register" style={Styles.link} className="link">Create one</Link>

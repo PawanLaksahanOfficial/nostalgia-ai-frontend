@@ -105,6 +105,27 @@ export const updateProfile = (
 ): Promise<unknown> =>
     unwrap(apiClient.put("/api/profile/myProfile", data), "Failed to update profile.");
 
+export const toUserSummary = (profile: ProfileData): UserSummary => ({
+    userId: profile.userId,
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    email: profile.email,
+    avatarUrl: profile.avatarUrl,
+    tier: profile.tier,
+    monthlyMemoriesUsed: profile.quota?.monthlyMemoriesUsed ?? 0,
+    monthlyMemoriesLimit: profile.quota?.monthlyMemoriesLimit ?? 0,
+});
+
+export const uploadAvatar = (file: File): Promise<{ avatarUrl: string }> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    // No Content-Type header: the browser adds the multipart boundary itself.
+    return unwrap(apiClient.post("/api/profile/avatar", formData), "Failed to upload your photo.");
+};
+
+export const removeAvatar = (): Promise<unknown> =>
+    unwrap(apiClient.delete("/api/profile/avatar"), "Failed to remove your photo.");
+
 export const changePassword = (
     data: { currentPassword: string; newPassword: string }
 ): Promise<unknown> =>
