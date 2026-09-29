@@ -85,6 +85,7 @@ export const login = {
             wrapper: {
                 display: "flex",
                 flexDirection: "column",
+                alignItems: "center",
                 gap: "0.75rem",
                 width: "100%",
             },
@@ -92,6 +93,9 @@ export const login = {
                 display: "flex",
                 justifyContent: "center",
                 width: "100%",
+                // Google's button iframe is a light document; matching its colour scheme keeps
+                // Chrome from painting an opaque white box behind it when the page is in dark mode.
+                colorScheme: "light",
             },
             socialErrorAlert: {
                 width: "100%",
@@ -112,12 +116,13 @@ export const login = {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                width: '100%',
+                position: 'relative',
+                maxWidth: '100%',
                 backgroundColor: '#1877F2',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '20px',
-                padding: '2px 16px 2px 2px',
+                padding: '2px 16px 2px 44px',
                 cursor: 'pointer',
                 height: '40px',
                 fontFamily: 'Roboto, Arial, sans-serif',
@@ -135,7 +140,9 @@ export const login = {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: '12px',
+                position: 'absolute',
+                left: '2px',
+                top: '2px',
             },
             socialIcon: {
                 width: '20px',

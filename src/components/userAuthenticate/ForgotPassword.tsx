@@ -5,6 +5,7 @@ import { Button } from "../common/Button";
 import { useComponentStyle } from "../../hooks/useComponentStyle";
 import { forgotPassword } from "../../services/userServices";
 import { validateEmail } from "../common/validate/ValidateInputs";
+import { AuthBackLink, AuthBrand } from "./AuthBrand";
 
 export const ForgotPassword: React.FC = () => {
   const Styles = useComponentStyle("login");
@@ -30,8 +31,10 @@ export const ForgotPassword: React.FC = () => {
 
   return (
     <div style={Styles.wrapper}>
+      <AuthBackLink />
       <main style={Styles.content}>
         <div style={Styles.card} className="card animate-fade-in-up">
+          <AuthBrand />
           <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={Styles.title}>Reset Your Password</h2>
             <p style={Styles.subtitle}>

@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useComponentStyle } from "../hooks/useComponentStyle";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { RootState } from "../redux/store";
-import { logout } from "../redux/authSlice";
+import { logout, updateUser } from "../redux/authSlice";
 import {
   getProfile,
   updateProfile,
@@ -13,10 +13,15 @@ import {
   cancelSubscription,
   resumeSubscription,
   createPortalSession,
+  uploadAvatar,
+  removeAvatar,
 } from "../services/userServices";
 import type { ProfileData, MemoryItem, SubscriptionStatus } from "../services/userServices";
 import { ErrorPage } from "../components/common/ErrorPage";
 import { Header } from "../components/common/Header";
+import { Footer } from "../components/common/Footer";
+import { Avatar } from "../components/common/Avatar";
+import { AVATAR_TYPES, validateAvatarFile } from "../components/helpers/avatar";
 import { InputField } from "../components/common/InputField";
 import { Button } from "../components/common/Button";
 import { useToast } from "../hooks/useToast";
@@ -45,6 +50,8 @@ export const ProfilePage: React.FC = () => {
   const [passwordForm, setPasswordForm] = useState(initialPasswordForm);
   const [changingPassword, setChangingPassword] = useState(false);
   const [billingPending, setBillingPending] = useState(false);
+  const [avatarPending, setAvatarPending] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -97,9 +104,48 @@ export const ProfilePage: React.FC = () => {
         lastName: profileForm.lastName
       });
       setEditing(false);
+      dispatch(updateUser({ firstName: profileForm.firstName, lastName: profileForm.lastName }));
       await loadData();
     } catch (error) {
       toast.error(messageFrom(error, "Failed to update profile."));
+    }
+  };
+
+  const handleAvatarSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+
+    const problem = validateAvatarFile(file);
+    if (problem) {
+      toast.error(problem);
+      return;
+    }
+
+    setAvatarPending(true);
+    try {
+      const { avatarUrl } = await uploadAvatar(file);
+      setProfile(prev => (prev ? { ...prev, avatarUrl } : prev));
+      dispatch(updateUser({ avatarUrl }));
+      toast.success("Profile photo updated.");
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to upload your photo."));
+    } finally {
+      setAvatarPending(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarPending(true);
+    try {
+      await removeAvatar();
+      setProfile(prev => (prev ? { ...prev, avatarUrl: null } : prev));
+      dispatch(updateUser({ avatarUrl: null }));
+      toast.success("Profile photo removed.");
+    } catch (error) {
+      toast.error(messageFrom(error, "Failed to remove your photo."));
+    } finally {
+      setAvatarPending(false);
     }
   };
 
@@ -215,6 +261,42 @@ export const ProfilePage: React.FC = () => {
       <main style={Styles.content}>
         <div style={Styles.card} className="card animate-fade-in-up">
           <h1 style={Styles.title}>My Profile</h1>
+
+          <div style={Styles.avatarSection}>
+            <Avatar src={profile.avatarUrl} size={96} alt={`${profile.firstName} ${profile.lastName}`} />
+            <div style={Styles.avatarDetails}>
+              <p style={Styles.avatarName}>{profile.firstName} {profile.lastName}</p>
+              <p style={Styles.avatarHint}>JPEG, PNG or WebP, up to 2MB.</p>
+              <div style={Styles.avatarActions}>
+                <button
+                  type="button"
+                  className="avatar-action"
+                  onClick={() => avatarInputRef.current?.click()}
+                  disabled={avatarPending}
+                >
+                  {avatarPending ? "Saving…" : profile.avatarUrl ? "Change photo" : "Upload photo"}
+                </button>
+                {profile.avatarUrl && (
+                  <button
+                    type="button"
+                    className="avatar-action avatar-action-danger"
+                    onClick={handleRemoveAvatar}
+                    disabled={avatarPending}
+                  >
+                    Remove photo
+                  </button>
+                )}
+              </div>
+              <input
+                ref={avatarInputRef}
+                type="file"
+                accept={AVATAR_TYPES.join(",")}
+                onChange={handleAvatarSelected}
+                style={{ display: "none" }}
+                aria-label="Upload profile photo"
+              />
+            </div>
+          </div>
 
           <div style={Styles.section}>
             <h2 style={Styles.sectionTitle}>Account Information</h2>
@@ -396,6 +478,7 @@ export const ProfilePage: React.FC = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 };

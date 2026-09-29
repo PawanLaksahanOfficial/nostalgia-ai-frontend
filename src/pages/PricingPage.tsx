@@ -96,6 +96,9 @@ export const PricingPage: React.FC = () => {
     if (currentTier === "premium") {
       return <span style={Styles.currentBadge}>Current plan</span>;
     }
+    if (!plan.priceId || plan.amountMinorUnits == null) {
+      return <Button label="Coming soon" type="button" variant="outline" disabled={true} />;
+    }
     return (
       <Button
         label={isAuthenticated ? "Upgrade to Premium" : "Sign in to upgrade"}

@@ -99,14 +99,13 @@ export const homePage = {
       flexDirection: "column",
       minHeight: "100vh",
       backgroundColor: "var(--color-bg-page)",
-      padding: "2rem 4rem",
     },
     content: {
       flex: 1,
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      paddingTop: "1rem",
+      padding: "3rem 4rem 0",
     },
     card: {
       backgroundColor: "var(--color-bg-card)",

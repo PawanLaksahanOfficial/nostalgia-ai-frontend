@@ -6,6 +6,7 @@ import { useComponentStyle } from "../../hooks/useComponentStyle";
 import { useToast } from "../../hooks/useToast";
 import { resetPassword } from "../../services/userServices";
 import { validatePassword, validateConfirmPassword } from "../common/validate/ValidateInputs";
+import { AuthBackLink, AuthBrand } from "./AuthBrand";
 
 export const ResetPassword: React.FC = () => {
   const Styles = useComponentStyle("login");
@@ -39,8 +40,10 @@ export const ResetPassword: React.FC = () => {
   if (!token || !email) {
     return (
       <div style={Styles.wrapper}>
+        <AuthBackLink />
         <main style={Styles.content}>
           <div style={Styles.card} className="card animate-fade-in-up">
+            <AuthBrand />
             <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
               <h2 style={Styles.title}>Link Not Valid</h2>
               <p style={Styles.subtitle}>
@@ -60,8 +63,10 @@ export const ResetPassword: React.FC = () => {
 
   return (
     <div style={Styles.wrapper}>
+      <AuthBackLink />
       <main style={Styles.content}>
         <div style={Styles.card} className="card animate-fade-in-up">
+          <AuthBrand />
           <header style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <h2 style={Styles.title}>Choose a New Password</h2>
             <p style={Styles.subtitle}>Setting a new password for {email}</p>

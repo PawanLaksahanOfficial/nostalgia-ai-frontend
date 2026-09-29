@@ -17,6 +17,8 @@ import { watchPage } from "./watchPage";
 import { modal } from "./modal";
 import { shareModal } from "./shareModal";
 import { videoCard } from "./videoCard";
+import { authBrand } from "./authBrand";
+import { legalPage } from "./legalPage";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -45,3 +47,5 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("modal", modal)
     styleDictionary.set("shareModal", shareModal)
     styleDictionary.set("videoCard", videoCard)
+    styleDictionary.set("authBrand", authBrand)
+    styleDictionary.set("legalPage", legalPage)

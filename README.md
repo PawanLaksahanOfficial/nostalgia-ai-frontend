@@ -43,8 +43,14 @@ definition — never put a secret in one.
 | Variable | Purpose |
 | --- | --- |
 | `VITE_API_BASE_URL` | Backend origin, no trailing slash (e.g. `https://nostalgia-ai-backend.onrender.com`) |
-| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID for social sign-in |
+| `VITE_GOOGLE_CLIENT_ID` | Google OAuth client ID for social sign-in. Must match the backend's `GoogleClientId`, and the site origin must be an Authorized JavaScript origin on that client |
 | `VITE_META_APP_ID` | Meta app ID for social sign-in |
+| `VITE_SUPPORT_EMAIL` | Contact address shown on the `/privacy` page (kept out of the repo on purpose) |
+
+Each social button is hidden when its variable is empty. On Vercel, set them under
+**Settings → Environment Variables** and **redeploy**: a build made before they were set keeps
+the empty values. `vercel.json` rewrites every path to `index.html` so deep links and page
+refreshes (e.g. `/register`) load the app instead of a 404.
 
 ### Scripts
 

@@ -1,19 +1,22 @@
 export const header = {
   mobile: {
     wrapper: {
+      position: "sticky",
+      top: 0,
+      zIndex: 50,
       display: "flex",
+      flexWrap: "wrap",
       justifyContent: "space-between",
       alignItems: "center",
-      padding: "1rem",
+      padding: "0.75rem 1rem",
       backgroundColor: "var(--color-bg-card)",
+      borderBottom: "1px solid var(--color-border)",
       boxShadow: "var(--shadow-card)",
-      overflow: "hidden"
     },
     logo: {
-      fontSize: "1.3rem",
-      fontWeight: 700,
-      fontFamily: "var(--font-heading)",
-      color: "var(--color-text-primary)",
+      display: "flex",
+      alignItems: "center",
+      textDecoration: "none",
     },
     image: {
       width: "120px",
@@ -21,10 +24,21 @@ export const header = {
       objectFit: "cover",
       objectPosition: "center",
     },
+    // On phones the nav drops to its own full-width row under the logo and actions.
+    nav: {
+      order: 3,
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      gap: "0.25rem",
+      marginTop: "0.6rem",
+      paddingTop: "0.6rem",
+      borderTop: "1px solid var(--color-border)",
+    },
     right: {
       display: "flex",
       alignItems: "center",
-      gap: "0.75rem",
+      gap: "0.6rem",
     },
     signIn: {
       background: "transparent",
@@ -34,29 +48,16 @@ export const header = {
       cursor: "pointer",
       color: "var(--color-accent)",
     },
-    profileCircle: {
-      width: "36px",
-      height: "36px",
-      borderRadius: "50%",
-      background: "var(--color-accent)",
-      cursor: "pointer",
-    },
-    userSection: {
+    avatarButton: {
       display: "flex",
-      alignItems: "center",
-      gap: "1rem",
+      padding: 0,
+      border: "none",
+      background: "none",
+      borderRadius: "50%",
+      cursor: "pointer",
     },
     userName: {
-      color: "var(--color-text-primary)",
-      fontSize: "0.9rem",
-      fontWeight: 500,
-    },
-    myVideosLink: {
-      background: "transparent",
-      border: "none",
-      padding: "0.4rem 0.2rem",
-      cursor: "pointer",
-      color: "var(--color-text-primary)",
+      color: "var(--color-text-secondary)",
       fontSize: "0.9rem",
       fontWeight: 500,
     },
@@ -71,16 +72,27 @@ export const header = {
   },
   desktop: {
     wrapper: {
-      padding: "1rem 4rem",
-    },
-    logo: {
-      fontSize: "1.6rem",
+      flexWrap: "nowrap",
+      padding: "0.9rem 4rem",
     },
     image: {
       width: "150px",
       height: "42px",
       objectFit: "cover",
       objectPosition: "center",
+    },
+    nav: {
+      order: 0,
+      width: "auto",
+      flex: 1,
+      justifyContent: "flex-start",
+      marginTop: 0,
+      marginLeft: "2.5rem",
+      paddingTop: 0,
+      borderTop: "none",
+    },
+    right: {
+      gap: "0.9rem",
     },
   },
 };
