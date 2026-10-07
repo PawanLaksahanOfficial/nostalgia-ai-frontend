@@ -15,6 +15,7 @@ import { Login } from './components/userAuthenticate/Login'
 import { Register } from './components/userAuthenticate/Register'
 import { ForgotPassword } from './components/userAuthenticate/ForgotPassword'
 import { ResetPassword } from './components/userAuthenticate/ResetPassword'
+import { VerifyEmail } from './components/userAuthenticate/VerifyEmail'
 import { useTheme } from './hooks/useTheme'
 import { ToastContainer } from './components/common/ToastContainer'
 import { setUser } from './redux/authSlice'
@@ -36,6 +37,7 @@ function App() {
     { path: "/register", element: isAuthenticated ? <Navigate to="/" replace /> : <Register /> },
     { path: "/forgot-password", element: <ForgotPassword /> },
     { path: "/reset-password", element: <ResetPassword /> },
+    { path: "/verify-email", element: <VerifyEmail /> },
     { path: "/profile", element: isAuthenticated ? <ProfilePage /> : <Navigate to="/signIn" replace /> },
     { path: "/videos", element: isAuthenticated ? <VideosPage /> : <Navigate to="/signIn" replace /> },
     { path: "/s/:token", element: <WatchPage /> },

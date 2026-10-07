@@ -40,6 +40,21 @@ export const homePage = {
       flexDirection: "column",
       gap: "1rem",
     },
+    verifyBanner: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-start",
+      gap: "0.6rem",
+      padding: "0.9rem 1rem",
+      borderRadius: "12px",
+      border: "1px solid var(--color-accent)",
+      backgroundColor: "var(--color-accent-soft)",
+    },
+    verifyText: {
+      margin: 0,
+      fontSize: "0.9rem",
+      color: "var(--color-text-primary)",
+    },
     charCount: {
       fontSize: "0.75rem",
       textAlign: "right",

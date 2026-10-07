@@ -10,6 +10,7 @@ const user: UserData = {
     tier: "free",
     monthlyMemoriesUsed: 0,
     monthlyMemoriesLimit: 3,
+    emailVerified: true,
 };
 
 const signedIn: AuthState = { isAuthenticated: true, token: "t", user: null };

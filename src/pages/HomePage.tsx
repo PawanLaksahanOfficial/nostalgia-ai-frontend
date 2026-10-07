@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { InputField } from "../components/common/InputField";
@@ -18,6 +18,8 @@ import {
   getVideoStatus,
 } from "../services/videoServices";
 import type { NarrationSource, VideoStatus } from "../services/videoServices";
+import { getProfile, resendVerificationEmail, toUserSummary } from "../services/userServices";
+import { setUser } from "../redux/authSlice";
 import type { RootState } from "../redux/store";
 
 const MIN_MEMORY_LENGTH = 20;
@@ -39,8 +41,11 @@ const MAX_POLL_MS = 5 * 60 * 1000;
 export const HomePage: React.FC = () => {
   const Styles = useComponentStyle("homePage");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const toast = useToast();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const needsVerification = isAuthenticated && user?.emailVerified === false;
+  const [resending, setResending] = useState(false);
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [musicMood, setMusicMood] = useState("");
@@ -65,6 +70,20 @@ export const HomePage: React.FC = () => {
       if (videoUrl) URL.revokeObjectURL(videoUrl);
     };
   }, [videoUrl]);
+
+  // The confirmation link usually opens in a new tab; pick up the change when the user comes back.
+  useEffect(() => {
+    if (!needsVerification) return;
+    const refresh = () => {
+      getProfile()
+        .then((profile) => dispatch(setUser(toUserSummary(profile))))
+        .catch(() => {
+          // Stay on the banner; the next focus tries again.
+        });
+    };
+    window.addEventListener("focus", refresh);
+    return () => window.removeEventListener("focus", refresh);
+  }, [needsVerification, dispatch]);
 
   useEffect(() => {
     if (videoId === null) return;
@@ -153,6 +172,17 @@ export const HomePage: React.FC = () => {
     }
   };
 
+  const handleResendVerification = async () => {
+    setResending(true);
+    try {
+      toast.success(await resendVerificationEmail());
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not send the email.");
+    } finally {
+      setResending(false);
+    }
+  };
+
   const handleDownload = async () => {
     if (videoId === null) return;
     setDownloading(true);
@@ -199,6 +229,21 @@ export const HomePage: React.FC = () => {
               Describe your memory and add a photo if you have one.
               We'll turn it into a narrated video with photos and music.
             </p>
+            {needsVerification && (
+              <div style={Styles.verifyBanner} role="status">
+                <p style={Styles.verifyText}>
+                  Confirm your email to start creating videos. We sent a link to <strong>{user?.email}</strong>.
+                </p>
+                <Button
+                  label="Resend email"
+                  type="button"
+                  variant="outline"
+                  size="small"
+                  disabled={resending}
+                  loading={resending}
+                  onClick={handleResendVerification} />
+              </div>
+            )}
             <div style={Styles.form}>
               <InputField
                 label="Title"
@@ -240,7 +285,7 @@ export const HomePage: React.FC = () => {
                 label={creating ? "Creating..." : isFailed ? "Try Again" : "Generate Video"}
                 type="button"
                 variant="primary"
-                disabled={creating || !title.trim() || isTooShort || isOverLimit}
+                disabled={creating || needsVerification || !title.trim() || isTooShort || isOverLimit}
                 loading={creating}
                 onClick={handleGenerate} />
             </div>

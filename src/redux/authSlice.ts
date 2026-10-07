@@ -9,6 +9,7 @@ export interface UserData {
     tier: 'free' | 'premium';
     monthlyMemoriesUsed: number;
     monthlyMemoriesLimit: number;
+    emailVerified: boolean;
 }
 
 export interface AuthState {
