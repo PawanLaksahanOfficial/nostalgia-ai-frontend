@@ -11,6 +11,7 @@ import type { RegisterModel, RegisterValidation } from "../../models/RegisterMod
 import { validateConfirmPassword, validateEmail, validatePassword, validateText } from "../common/validate/ValidateInputs";
 import { setCredentials } from "../../redux/authSlice";
 import { register } from "../../services/userServices";
+import { useToast } from "../../hooks/useToast";
 
 const initialFormInputs: RegisterModel = {
     firstName: "",
@@ -33,6 +34,7 @@ export const Register: React.FC = () => {
     const Styles = useComponentStyle("register");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const toast = useToast();
     const [formData, setFormData] = useState<RegisterModel>(initialFormInputs);
     const [validateModel, setValidateModel] = useState<RegisterValidation>(initialRegisterValidation);
     const [error, setError] = useState("");
@@ -81,6 +83,9 @@ export const Register: React.FC = () => {
                 password: formData.password,
             });
             dispatch(setCredentials({ token: result.token, user: result.user }));
+            if (!result.user.emailVerified) {
+                toast.success(`Account created! Check ${result.user.email} for a link to confirm your email.`);
+            }
             navigate("/");
         } catch (err) {
             const message = err instanceof Error ? err.message : "Registration failed.";

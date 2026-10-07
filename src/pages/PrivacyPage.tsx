@@ -64,6 +64,11 @@ export const PrivacyPage: React.FC = () => {
               details. We store only the customer and subscription references Stripe gives us.
             </li>
             <li>
+              <strong style={Styles.strong}>Network address:</strong> to stop one person from making many
+              accounts or using up the free service, we keep a one-way, keyed hash of the IP address you sign
+              up and create videos from. We never store the address itself.
+            </li>
+            <li>
               <strong style={Styles.strong}>Stored in your browser:</strong> a sign-in token and your light or
               dark theme choice, kept in local storage. We do not use advertising or tracking cookies.
             </li>
@@ -74,8 +79,11 @@ export const PrivacyPage: React.FC = () => {
             <li>To create your account and keep you signed in.</li>
             <li>To generate, store and play back your videos, and to show them in My Videos.</li>
             <li>To apply your plan's monthly limits and, if you upgrade, manage your subscription.</li>
-            <li>To send password reset emails you request.</li>
-            <li>To keep the service secure, for example by limiting repeated requests from one address.</li>
+            <li>To send account emails, such as confirming your email address and resetting your password.</li>
+            <li>
+              To keep the service secure and fair, for example by limiting repeated requests, sign-ups and free
+              videos from one network.
+            </li>
           </ul>
           <p style={Styles.paragraph}>
             We do not sell your information and do not use it for advertising.
@@ -96,7 +104,7 @@ export const PrivacyPage: React.FC = () => {
             </li>
             <li><strong style={Styles.strong}>Google</strong> and <strong style={Styles.strong}>Meta</strong> handle sign-in, only if you choose them.</li>
             <li><strong style={Styles.strong}>Stripe</strong> processes payments, only if you upgrade.</li>
-            <li><strong style={Styles.strong}>Amazon Web Services</strong> delivers password reset emails.</li>
+            <li><strong style={Styles.strong}>Brevo</strong> delivers account emails, such as email confirmation and password resets.</li>
           </ul>
           <p style={Styles.paragraph}>
             Some free AI models may keep the text they receive under their providers' own terms, so please

@@ -8,6 +8,7 @@ export interface ButtonProps {
   variant: "primary" | "secondary" | "outline" | "dangerOutline";
   disabled: boolean;
   loading?: boolean;
+  size?: "default" | "small";
 }
 
 const variantStyleKey: Record<ButtonProps["variant"], string> = {
@@ -22,7 +23,8 @@ export const Button: React.FC<ButtonProps> = (Props) => {
   const loading = Props.loading;
   const disabled = Props.disabled
   const variantStyle = Styles[variantStyleKey[Props.variant]];
-  const mergedStyle = {...Styles.base, ...variantStyle, ...(disabled ? Styles.disabled : {})};
+  const sizeStyle = Props.size === "small" ? Styles.small : {};
+  const mergedStyle = {...Styles.base, ...variantStyle, ...sizeStyle, ...(disabled ? Styles.disabled : {})};
 
   return (
     <button

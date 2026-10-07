@@ -11,6 +11,7 @@ export interface UserSummary {
     tier: 'free' | 'premium';
     monthlyMemoriesUsed: number;
     monthlyMemoriesLimit: number;
+    emailVerified: boolean;
 }
 
 export interface AuthResult {
@@ -23,6 +24,7 @@ export interface ProfileData {
     firstName: string;
     lastName: string;
     email: string;
+    emailVerified: boolean;
     avatarUrl: string | null;
     tier: 'free' | 'premium';
     quota: {
@@ -97,6 +99,21 @@ export const resetPassword = (
 ): Promise<unknown> =>
     unwrap(apiClient.post("/api/auth/reset-password", data), "Could not reset your password.");
 
+export const verifyEmail = (data: { email: string; token: string }): Promise<unknown> =>
+    unwrap(apiClient.post("/api/auth/verify-email", data), "Could not verify your email.");
+
+export const resendVerificationEmail = async (): Promise<string> => {
+    try {
+        const apiResponse = (await apiClient.post("/api/auth/resend-verification")).data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Could not send the email.");
+        }
+        return apiResponse.message;
+    } catch (error) {
+        throw new Error(extractApiMessage(error, "Could not send the email."));
+    }
+};
+
 export const getProfile = (): Promise<ProfileData> =>
     unwrap<ProfileData>(apiClient.get("/api/profile/myProfile"), "Failed to load profile.");
 
@@ -114,6 +131,7 @@ export const toUserSummary = (profile: ProfileData): UserSummary => ({
     tier: profile.tier,
     monthlyMemoriesUsed: profile.quota?.monthlyMemoriesUsed ?? 0,
     monthlyMemoriesLimit: profile.quota?.monthlyMemoriesLimit ?? 0,
+    emailVerified: profile.emailVerified,
 });
 
 export const uploadAvatar = (file: File): Promise<{ avatarUrl: string }> => {

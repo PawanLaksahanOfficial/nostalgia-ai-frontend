@@ -31,6 +31,14 @@ export const button = {
       color: "var(--color-danger)",
       border: "1.5px solid var(--color-danger)",
     },
+    // Compact size for rows of actions, such as the buttons on a video card.
+    small: {
+      width: "auto",
+      padding: "0.45rem 1rem",
+      fontSize: "0.9rem",
+      borderRadius: "8px",
+      marginTop: 0,
+    },
     disabled: {
       backgroundColor: "var(--color-text-muted)",
       color: "#fff",

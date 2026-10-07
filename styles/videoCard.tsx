@@ -114,14 +114,7 @@ export const videoCard = {
       gap: "0.75rem",
     },
   },
-  desktop: {
-    mainRow: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-    },
-    actions: {
-      flexWrap: "nowrap",
-    },
-  },
+  // Details sit above the actions at every width: five buttons beside the details squeezed the
+  // title into a narrow column and pushed the last buttons out of the card.
+  desktop: {},
 };

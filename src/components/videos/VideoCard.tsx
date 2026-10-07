@@ -134,8 +134,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onChanged }) => {
                 onChange={(e) => setTitleDraft(e.target.value)}
               />
               <div style={Styles.editButtons}>
-                <Button label="Save" type="button" variant="primary" disabled={renaming} loading={renaming} onClick={handleSaveRename} />
-                <Button label="Cancel" type="button" variant="secondary" disabled={renaming} onClick={() => { setEditing(false); setTitleDraft(video.title); }} />
+                <Button label="Save" type="button" variant="primary" size="small" disabled={renaming} loading={renaming} onClick={handleSaveRename} />
+                <Button label="Cancel" type="button" variant="secondary" size="small" disabled={renaming} onClick={() => { setEditing(false); setTitleDraft(video.title); }} />
               </div>
             </div>
           ) : (
@@ -167,19 +167,20 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onChanged }) => {
                 label={playing ? "Hide" : "Play"}
                 type="button"
                 variant="outline"
+                size="small"
                 disabled={loadingVideo}
                 loading={loadingVideo}
                 onClick={handlePlay}
               />
             )}
             {video.hasVideo && (
-              <Button label="Download" type="button" variant="outline" disabled={downloading} loading={downloading} onClick={handleDownload} />
+              <Button label="Download" type="button" variant="outline" size="small" disabled={downloading} loading={downloading} onClick={handleDownload} />
             )}
             {video.hasVideo && (
-              <Button label="Share" type="button" variant="outline" disabled={false} onClick={() => setShareOpen(true)} />
+              <Button label="Share" type="button" variant="outline" size="small" disabled={false} onClick={() => setShareOpen(true)} />
             )}
-            <Button label="Rename" type="button" variant="secondary" disabled={false} onClick={() => setEditing(true)} />
-            <Button label="Delete" type="button" variant="dangerOutline" disabled={video.status === "Processing"} onClick={() => setConfirmDeleteOpen(true)} />
+            <Button label="Rename" type="button" variant="secondary" size="small" disabled={false} onClick={() => setEditing(true)} />
+            <Button label="Delete" type="button" variant="dangerOutline" size="small" disabled={video.status === "Processing"} onClick={() => setConfirmDeleteOpen(true)} />
           </div>
         )}
       </div>

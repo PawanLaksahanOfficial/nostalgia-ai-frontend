@@ -64,22 +64,22 @@ const advance = async (ms: number) => {
     });
 };
 
+const testUser = {
+    userId: 1,
+    firstName: "Test",
+    lastName: "User",
+    email: "test@example.com",
+    avatarUrl: null,
+    tier: "free" as const,
+    monthlyMemoriesUsed: 0,
+    monthlyMemoriesLimit: 3,
+    emailVerified: true,
+};
+
 describe("HomePage video generation", () => {
     beforeEach(() => {
         vi.useFakeTimers();
-        store.dispatch(setCredentials({
-            token: "test-token",
-            user: {
-                userId: 1,
-                firstName: "Test",
-                lastName: "User",
-                email: "test@example.com",
-                avatarUrl: null,
-                tier: "free",
-                monthlyMemoriesUsed: 0,
-                monthlyMemoriesLimit: 3,
-            },
-        }));
+        store.dispatch(setCredentials({ token: "test-token", user: testUser }));
         vi.mocked(createVideo).mockResolvedValue({ id: 1, status: "Pending" });
         vi.mocked(fetchVideoObjectUrl).mockResolvedValue("blob:video");
     });
@@ -136,6 +136,17 @@ describe("HomePage video generation", () => {
         await advance(30_000);
 
         expect(getVideoStatus).toHaveBeenCalledTimes(1);
+    });
+
+    it("asks users to confirm their email before they can generate", () => {
+        store.dispatch(setCredentials({ token: "test-token", user: { ...testUser, emailVerified: false } }));
+
+        renderHomePage();
+        fillForm(STORY);
+
+        expect(screen.getByText(/confirm your email to start creating videos/i)).toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Resend email" })).toBeEnabled();
+        expect(screen.getByRole("button", { name: "Generate Video" })).toBeDisabled();
     });
 
     it("keeps Generate disabled until the story is long enough for the server", () => {
