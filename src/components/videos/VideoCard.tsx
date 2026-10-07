@@ -6,6 +6,7 @@ import { InputField } from "../common/InputField";
 import { Modal } from "../common/Modal";
 import { VideoPreview } from "../VedioPreview";
 import { ShareModal } from "./ShareModal";
+import { VideoCredits } from "./VideoCredits";
 import {
   deleteVideo,
   downloadVideo,
@@ -153,6 +154,9 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onChanged }) => {
           )}
           {video.status === "Failed" && video.failureReason && (
             <p style={Styles.errorText}>{video.failureReason}</p>
+          )}
+          {video.status === "Completed" && (
+            <VideoCredits narrationSource={video.narrationSource} stockPhotoCredit={video.stockPhotoCredit} />
           )}
         </div>
 

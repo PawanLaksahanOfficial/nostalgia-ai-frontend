@@ -5,6 +5,7 @@ import { Header } from "../components/common/Header";
 import { Footer } from "../components/common/Footer";
 import { ErrorPage } from "../components/common/ErrorPage";
 import { Button } from "../components/common/Button";
+import { VideoCredits } from "../components/videos/VideoCredits";
 import { getPublicVideo, publicStreamUrl, publicThumbnailUrl } from "../services/videoServices";
 import type { PublicVideo } from "../services/videoServices";
 
@@ -75,6 +76,8 @@ export const WatchPage: React.FC = () => {
           >
             Your browser does not support the video tag.
           </video>
+
+          <VideoCredits stockPhotoCredit={video.stockPhotoCredit} />
 
           {video.narrative && <p style={Styles.narrative}>{video.narrative}</p>}
 

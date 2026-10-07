@@ -1,6 +1,9 @@
-import { apiClient, publicApiClient } from "./apiClient";
+import { apiClient, extractApiMessage, publicApiClient } from "./apiClient";
 
 export type VideoStatus = "Pending" | "Processing" | "Completed" | "Failed";
+
+// "Original" means the AI was unavailable and the user's own text was narrated as written.
+export type NarrationSource = "Ai" | "Original";
 
 export interface VideoListItem {
     id: number;
@@ -16,6 +19,8 @@ export interface VideoListItem {
     failureReason: string | null;
     hasVideo: boolean;
     hasThumbnail: boolean;
+    narrationSource: NarrationSource | null;
+    stockPhotoCredit: string | null;
     createdAt: string;
     completedAt: string | null;
 }
@@ -33,6 +38,8 @@ export interface VideoStatusResponse {
     hasVideo: boolean;
     durationSeconds: number | null;
     completedAt: string | null;
+    narrationSource: NarrationSource | null;
+    stockPhotoCredit: string | null;
 }
 
 export interface ShareLinkItem {
@@ -55,6 +62,7 @@ export interface PublicVideo {
     ownerFirstName: string;
     createdAt: string;
     viewCount: number;
+    stockPhotoCredit: string | null;
 }
 
 export const createVideo = async (
@@ -69,14 +77,16 @@ export const createVideo = async (
     if (musicMood) formData.append("MusicMood", musicMood);
     if (image) formData.append("image", image);
 
-    // No Content-Type header set here: the browser must add the multipart
-    // boundary itself, which a manually-set header would omit.
-    const response = await apiClient.post("/api/videos", formData);
-    const apiResponse = response.data;
-    if (!apiResponse.success) {
-        throw new Error(apiResponse.message || "Failed to create video.");
+    try {
+        const response = await apiClient.post("/api/videos", formData);
+        const apiResponse = response.data;
+        if (!apiResponse.success) {
+            throw new Error(apiResponse.message || "Failed to create video.");
+        }
+        return apiResponse.data;
+    } catch (error) {
+        throw new Error(extractApiMessage(error, "Failed to create video."));
     }
-    return apiResponse.data;
 };
 
 export const getMyVideos = async (): Promise<VideoListItem[]> => {
