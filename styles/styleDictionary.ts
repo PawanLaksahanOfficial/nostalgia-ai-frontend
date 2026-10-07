@@ -19,6 +19,7 @@ import { shareModal } from "./shareModal";
 import { videoCard } from "./videoCard";
 import { authBrand } from "./authBrand";
 import { legalPage } from "./legalPage";
+import { videoCredits } from "./videoCredits";
 
 type StyleVariant = Record<string, Record<string, string | number | object>>;
 
@@ -49,3 +50,4 @@ export const styleDictionary = new Map<string, PageStyle>();
     styleDictionary.set("videoCard", videoCard)
     styleDictionary.set("authBrand", authBrand)
     styleDictionary.set("legalPage", legalPage)
+    styleDictionary.set("videoCredits", videoCredits)

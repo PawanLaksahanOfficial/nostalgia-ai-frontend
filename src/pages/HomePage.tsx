@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Header } from "../components/common/Header";
@@ -8,6 +8,7 @@ import { TextArea } from "../components/common/TextArea";
 import { Button } from "../components/common/Button";
 import { VideoPreview } from "../components/VedioPreview";
 import { ShareModal } from "../components/videos/ShareModal";
+import { VideoCredits } from "../components/videos/VideoCredits";
 import { useComponentStyle } from "../hooks/useComponentStyle";
 import { useToast } from "../hooks/useToast";
 import {
@@ -16,9 +17,10 @@ import {
   fetchVideoObjectUrl,
   getVideoStatus,
 } from "../services/videoServices";
-import type { VideoStatus } from "../services/videoServices";
+import type { NarrationSource, VideoStatus } from "../services/videoServices";
 import type { RootState } from "../redux/store";
 
+const MIN_MEMORY_LENGTH = 20;
 const MAX_MEMORY_LENGTH = 2000;
 
 const musicMoods = [
@@ -48,72 +50,78 @@ export const HomePage: React.FC = () => {
   const [status, setStatus] = useState<VideoStatus | null>(null);
   const [processingStep, setProcessingStep] = useState<string | null>(null);
   const [failureReason, setFailureReason] = useState<string | null>(null);
+  const [narrationSource, setNarrationSource] = useState<NarrationSource | null>(null);
+  const [stockPhotoCredit, setStockPhotoCredit] = useState<string | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [timedOut, setTimedOut] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pollCountRef = useRef(0);
-  const pollStartRef = useRef<number | null>(null);
-  const cancelledRef = useRef(false);
+  const isTooShort = text.trim().length < MIN_MEMORY_LENGTH;
   const isOverLimit = text.length > MAX_MEMORY_LENGTH;
 
   useEffect(() => {
     return () => {
-      cancelledRef.current = true;
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (videoUrl) URL.revokeObjectURL(videoUrl);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [videoUrl]);
 
   useEffect(() => {
-    if (videoId === null || status === "Completed" || status === "Failed" || status === null) {
-      return;
-    }
+    if (videoId === null) return;
 
-    if (pollStartRef.current === null) {
-      pollStartRef.current = Date.now();
-    }
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let polls = 0;
+    const startedAt = Date.now();
 
-    if (Date.now() - pollStartRef.current > MAX_POLL_MS) {
-      setTimedOut(true);
-      return;
-    }
-
-    const delay = pollCountRef.current < FAST_POLL_COUNT ? FAST_POLL_MS : SLOW_POLL_MS;
-    timeoutRef.current = setTimeout(async () => {
-      if (cancelledRef.current) return;
-      pollCountRef.current += 1;
+    const poll = async () => {
       try {
         const response = await getVideoStatus(videoId);
-        if (cancelledRef.current) return;
+        if (cancelled) return;
         setStatus(response.status);
         setProcessingStep(response.processingStep);
         setFailureReason(response.failureReason);
+        setNarrationSource(response.narrationSource);
+        setStockPhotoCredit(response.stockPhotoCredit);
+        if (response.status === "Completed" || response.status === "Failed") return;
       } catch {
         // A missed poll is not worth surfacing; the next poll retries.
       }
-    }, delay);
-
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (cancelled) return;
+      if (Date.now() - startedAt > MAX_POLL_MS) {
+        setTimedOut(true);
+        return;
+      }
+      polls += 1;
+      timer = setTimeout(poll, polls < FAST_POLL_COUNT ? FAST_POLL_MS : SLOW_POLL_MS);
     };
-  }, [videoId, status]);
+
+    timer = setTimeout(poll, FAST_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [videoId]);
 
   useEffect(() => {
-    if (status !== "Completed" || videoId === null || videoUrl) return;
+    if (status !== "Completed" || videoId === null) return;
 
+    let cancelled = false;
     setLoadingPreview(true);
     fetchVideoObjectUrl(videoId)
       .then((url) => {
-        if (!cancelledRef.current) setVideoUrl(url);
+        if (cancelled) URL.revokeObjectURL(url);
+        else setVideoUrl(url);
       })
       .catch((error: any) => {
-        toast.error(error.message || "Failed to load video preview.");
+        if (!cancelled) toast.error(error.message || "Failed to load video preview.");
       })
-      .finally(() => setLoadingPreview(false));
+      .finally(() => {
+        if (!cancelled) setLoadingPreview(false);
+      });
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, videoId]);
 
@@ -127,12 +135,14 @@ export const HomePage: React.FC = () => {
       toast.error("Please add a title and describe your memory.");
       return;
     }
+    if (isTooShort) {
+      toast.error(`Please write at least ${MIN_MEMORY_LENGTH} characters so we have something to work with.`);
+      return;
+    }
 
     setCreating(true);
     try {
       const response = await createVideo(title.trim(), text.trim(), musicMood || null, image);
-      pollCountRef.current = 0;
-      pollStartRef.current = null;
       setTimedOut(false);
       setVideoId(response.id);
       setStatus(response.status);
@@ -156,15 +166,14 @@ export const HomePage: React.FC = () => {
   };
 
   const resetForm = () => {
-    if (videoUrl) URL.revokeObjectURL(videoUrl);
-    cancelledRef.current = false;
-    pollCountRef.current = 0;
-    pollStartRef.current = null;
     setVideoId(null);
     setStatus(null);
     setProcessingStep(null);
     setFailureReason(null);
+    setNarrationSource(null);
+    setStockPhotoCredit(null);
     setVideoUrl(null);
+    setLoadingPreview(false);
     setTimedOut(false);
   };
 
@@ -187,8 +196,8 @@ export const HomePage: React.FC = () => {
           <div style={Styles.card} className="card animate-fade-in-up">
             <h1 style={Styles.title}>Create Your Nostalgic Memory Video</h1>
             <p style={Styles.subtext}>
-              Describe your memory and optionally upload an image.
-              We'll turn it into a beautiful nostalgic video.
+              Describe your memory and add a photo if you have one.
+              We'll turn it into a narrated video with photos and music.
             </p>
             <div style={Styles.form}>
               <InputField
@@ -203,6 +212,7 @@ export const HomePage: React.FC = () => {
                 ...Styles.charCount,
                 ...(isOverLimit ? Styles.charCountOver : {}),
               }}>
+                {text.trim().length > 0 && isTooShort && `At least ${MIN_MEMORY_LENGTH} characters · `}
                 {text.length} / {MAX_MEMORY_LENGTH}
               </div>
               <div style={Styles.fieldGroup}>
@@ -230,7 +240,7 @@ export const HomePage: React.FC = () => {
                 label={creating ? "Creating..." : isFailed ? "Try Again" : "Generate Video"}
                 type="button"
                 variant="primary"
-                disabled={creating || !title.trim() || !text.trim() || isOverLimit}
+                disabled={creating || !title.trim() || isTooShort || isOverLimit}
                 loading={creating}
                 onClick={handleGenerate} />
             </div>
@@ -257,6 +267,7 @@ export const HomePage: React.FC = () => {
               ) : videoUrl && (
                 <>
                   <VideoPreview src={videoUrl} />
+                  <VideoCredits narrationSource={narrationSource} stockPhotoCredit={stockPhotoCredit} />
                   <div style={Styles.resultActions}>
                     <Button label="Download" type="button" variant="primary" disabled={downloading} loading={downloading} onClick={handleDownload} />
                     <Button label="Share" type="button" variant="outline" disabled={false} onClick={() => setShareOpen(true)} />
