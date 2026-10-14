@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { clearTokens, getAccessToken, saveTokens } from "../services/tokenStorage";
 
 export interface UserData {
     userId: number;
@@ -19,8 +20,8 @@ export interface AuthState {
 }
 
 const initialState: AuthState = {
-    isAuthenticated: !!localStorage.getItem('token'),
-    token: localStorage.getItem('token'),
+    isAuthenticated: !!getAccessToken(),
+    token: getAccessToken(),
     user: null,
 };
 
@@ -30,12 +31,19 @@ const authSlice = createSlice({
     reducers: {
         setCredentials(state, action: PayloadAction<{
             token: string;
+            refreshToken: string;
             user: UserData;
         }>) {
             state.isAuthenticated = true;
             state.token = action.payload.token;
             state.user = action.payload.user;
-            localStorage.setItem('token', action.payload.token);
+            saveTokens(action.payload.token, action.payload.refreshToken);
+        },
+        // A renewed session (refresh or password change) keeps the signed-in user as is.
+        setTokens(state, action: PayloadAction<{ token: string; refreshToken: string }>) {
+            state.isAuthenticated = true;
+            state.token = action.payload.token;
+            saveTokens(action.payload.token, action.payload.refreshToken);
         },
         setUser(state, action: PayloadAction<UserData>) {
             state.user = action.payload;
@@ -49,10 +57,10 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
             state.token = null;
             state.user = null;
-            localStorage.removeItem('token');
+            clearTokens();
         },
     },
 });
 
-export const { setCredentials, setUser, updateUser, logout } = authSlice.actions;
+export const { setCredentials, setTokens, setUser, updateUser, logout } = authSlice.actions;
 export default authSlice.reducer;

@@ -4,6 +4,7 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/authSlice";
+import { revokeSession } from "../../services/userServices";
 import { ThemeToggle } from "./ThemeToggle";
 import { Avatar } from "./Avatar";
 
@@ -26,6 +27,7 @@ export const Header: React.FC = () => {
   };
 
   const handleSignOut = () => {
+    void revokeSession();
     dispatch(logout());
     navigate("/");
   };

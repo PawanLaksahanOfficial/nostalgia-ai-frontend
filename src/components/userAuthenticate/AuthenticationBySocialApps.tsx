@@ -49,7 +49,7 @@ export const AuthenticationBySocialApps: React.FC<Props> = ({ styles, onSuccess 
         setError("");
         try {
             const result = await postSocialToken(token, provider);
-            dispatch(setCredentials({ token: result.token, user: result.user }));
+            dispatch(setCredentials({ token: result.token, refreshToken: result.refreshToken, user: result.user }));
             if (onSuccess) {
                 onSuccess(result);
             }

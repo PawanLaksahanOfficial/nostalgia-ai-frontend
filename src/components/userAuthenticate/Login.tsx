@@ -26,7 +26,7 @@ export const Login: React.FC = () => {
     setLoading(true);
     try {
       const result = await login({ email, password });
-      dispatch(setCredentials({ token: result.token, user: result.user }));
+      dispatch(setCredentials({ token: result.token, refreshToken: result.refreshToken, user: result.user }));
       navigate("/");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Login failed.";
