@@ -82,7 +82,7 @@ export const Register: React.FC = () => {
                 email: formData.email,
                 password: formData.password,
             });
-            dispatch(setCredentials({ token: result.token, user: result.user }));
+            dispatch(setCredentials({ token: result.token, refreshToken: result.refreshToken, user: result.user }));
             if (!result.user.emailVerified) {
                 toast.success(`Account created! Check ${result.user.email} for a link to confirm your email.`);
             }

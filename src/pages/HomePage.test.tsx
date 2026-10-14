@@ -79,7 +79,7 @@ const testUser = {
 describe("HomePage video generation", () => {
     beforeEach(() => {
         vi.useFakeTimers();
-        store.dispatch(setCredentials({ token: "test-token", user: testUser }));
+        store.dispatch(setCredentials({ token: "test-token", refreshToken: "test-refresh-token", user: testUser }));
         vi.mocked(createVideo).mockResolvedValue({ id: 1, status: "Pending" });
         vi.mocked(fetchVideoObjectUrl).mockResolvedValue("blob:video");
     });
@@ -139,7 +139,7 @@ describe("HomePage video generation", () => {
     });
 
     it("asks users to confirm their email before they can generate", () => {
-        store.dispatch(setCredentials({ token: "test-token", user: { ...testUser, emailVerified: false } }));
+        store.dispatch(setCredentials({ token: "test-token", refreshToken: "test-refresh-token", user: { ...testUser, emailVerified: false } }));
 
         renderHomePage();
         fillForm(STORY);

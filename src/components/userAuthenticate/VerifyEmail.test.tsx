@@ -27,6 +27,7 @@ const renderAt = (url: string) =>
 const signIn = (email: string) =>
     store.dispatch(setCredentials({
         token: "test-token",
+        refreshToken: "test-refresh-token",
         user: {
             userId: 1,
             firstName: "Jane",

@@ -1,5 +1,6 @@
 import type { AxiosResponse } from "axios";
-import { apiClient, extractApiMessage } from "./apiClient";
+import { apiClient, extractApiMessage, publicApiClient } from "./apiClient";
+import { getRefreshToken } from "./tokenStorage";
 import type { VideoStatus } from "./videoServices";
 
 export interface UserSummary {
@@ -14,8 +15,12 @@ export interface UserSummary {
     emailVerified: boolean;
 }
 
-export interface AuthResult {
+export interface SessionTokens {
     token: string;
+    refreshToken: string;
+}
+
+export interface AuthResult extends SessionTokens {
     user: UserSummary;
 }
 
@@ -91,6 +96,17 @@ export const register = (
 export const login = (data: { email: string; password: string }): Promise<AuthResult> =>
     unwrap<AuthResult>(apiClient.post("/api/auth/login", data), "Login failed.");
 
+// Ends the session on the server as well. Reads the token synchronously, so call it before logout().
+export const revokeSession = async (): Promise<void> => {
+    const refreshToken = getRefreshToken();
+    if (!refreshToken) return;
+    try {
+        await publicApiClient.post("/api/auth/logout", { refreshToken });
+    } catch {
+        // Signing out locally still works; the session expires on its own.
+    }
+};
+
 export const forgotPassword = (email: string): Promise<unknown> =>
     unwrap(apiClient.post("/api/auth/forgot-password", { email }), "Could not send the reset email.");
 
@@ -144,10 +160,11 @@ export const uploadAvatar = (file: File): Promise<{ avatarUrl: string }> => {
 export const removeAvatar = (): Promise<unknown> =>
     unwrap(apiClient.delete("/api/profile/avatar"), "Failed to remove your photo.");
 
+// Other devices are signed out; the returned tokens keep this one signed in.
 export const changePassword = (
     data: { currentPassword: string; newPassword: string }
-): Promise<unknown> =>
-    unwrap(apiClient.put("/api/profile/change-password", data), "Failed to change password.");
+): Promise<SessionTokens> =>
+    unwrap<SessionTokens>(apiClient.put("/api/profile/change-password", data), "Failed to change password.");
 
 export const getMyMemories = (): Promise<MemoryItem[]> =>
     unwrap<MemoryItem[]>(apiClient.get("/api/profile/memories"), "Failed to load memories.");

@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useComponentStyle } from "../hooks/useComponentStyle";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { RootState } from "../redux/store";
-import { logout, updateUser } from "../redux/authSlice";
+import { logout, setTokens, updateUser } from "../redux/authSlice";
 import {
   getProfile,
   updateProfile,
   changePassword,
+  revokeSession,
   getMyMemories,
   getSubscriptionStatus,
   cancelSubscription,
@@ -167,12 +168,13 @@ export const ProfilePage: React.FC = () => {
     }
     setChangingPassword(true);
     try {
-      await changePassword({
+      const session = await changePassword({
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword
       });
+      dispatch(setTokens(session));
       setPasswordForm(initialPasswordForm);
-      toast.success("Password changed successfully!");
+      toast.success("Password changed. Your other devices have been signed out.");
     } catch (error) {
       toast.error(messageFrom(error, "Failed to change password."));
     } finally {
@@ -181,6 +183,7 @@ export const ProfilePage: React.FC = () => {
   };
 
   const handleSignOut = () => {
+    void revokeSession();
     dispatch(logout());
     navigate("/");
   };
